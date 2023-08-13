@@ -16,6 +16,15 @@ dependencies:
   path_provider: ^2.1.0
   dart_pg: ^1.1.5
   shared_preferences: ^2.2.0
+  file_picker: ^5.3.3
+  open_file: ^3.3.2
+  permission_handler: ^10.4.3
+  webview_flutter: ^4.2.2
+  path: ^1.8.3
+  archive: ^3.3.7
+  shelf: ^1.4.1
+  mime: ^1.0.4
+  url_launcher: ^6.1.12
 
 dev_dependencies:
   flutter_test:
@@ -23,5 +32,4 @@ dev_dependencies:
   flutter_lints: ^2.0.0
 
 flutter:
-
-  uses-material-design: true
+  uses-material-design: true 

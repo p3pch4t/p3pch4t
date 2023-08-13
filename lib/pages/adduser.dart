@@ -54,6 +54,7 @@ class _AddUserPageState extends State<AddUserPage> {
                 if (ui == null) {
                   return;
                 }
+                if (!mounted) return;
                 Navigator.of(context).pop();
               },
               child: const Text("Add"),
