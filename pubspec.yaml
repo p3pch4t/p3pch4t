@@ -25,6 +25,8 @@ dependencies:
   shelf: ^1.4.1
   mime: ^1.0.4
   url_launcher: ^6.1.12
+  objectbox: ^2.2.0
+  objectbox_flutter_libs: any
 
 dev_dependencies:
   flutter_test:

@@ -30,7 +30,7 @@ class _WebxdcFileViewAndroidState extends State<WebxdcFileViewAndroid> {
   double? progress;
 
   late final fileStore = widget.chatroom.fileStore;
-  late final roomId = widget.chatroom.publicKey.fingerprint;
+  late final roomFingerprint = widget.chatroom.publicKey.fingerprint;
   late final controller = WebViewController();
 
   @override
@@ -100,9 +100,7 @@ class _WebxdcFileViewAndroidState extends State<WebxdcFileViewAndroid> {
           );
           final lines = await updateElm.file.readAsLines();
           await updateElm.updateContent(
-            p3p.filestoreelementBox,
-            p3p.userinfoBox,
-            roomId,
+            p3p,
           );
           final jsPayload = '''
 for (let i = 0; i < window.webxdc.setUpdateListenerList.length; i++) {
@@ -156,8 +154,10 @@ window.webxdc.setUpdateListenerList[${jBody["listId"] - 1}]({
             if (kDebugMode) print(jsPayload);
             controller.runJavaScript(jsPayload);
           } catch (e) {
-            print("failed to process event: $i");
-            print(e);
+            if (kDebugMode) {
+              print("failed to process event: $i");
+              print(e);
+            }
             continue;
           }
         }
@@ -197,8 +197,7 @@ window.webxdc.setUpdateListenerList[${jBody["listId"] - 1}]({
   }
 
   Future<FileStoreElement?> getUpdateElement() async {
-    final elms = await widget.chatroom.fileStore
-        .getFileStoreElement(p3p.filestoreelementBox);
+    final elms = await widget.chatroom.fileStore.getFileStoreElement(p3p);
     final wpath = widget.webxdcFile.path;
     final desiredPath = p.normalize((wpath.split('/')
           ..removeLast()
@@ -211,21 +210,13 @@ window.webxdc.setUpdateListenerList[${jBody["listId"] - 1}]({
       }
     }
     if (updateElm == null) {
-      updateElm = await widget.chatroom.fileStore.putFileStoreElement(
-        p3p.filestoreelementBox,
-        p3p.userinfoBox,
-        null,
-        null,
-        0,
-        desiredPath,
-        p3p.fileStorePath,
-      );
+      updateElm = await widget.chatroom.fileStore.putFileStoreElement(p3p,
+          localFile: null,
+          localFileSha512sum: null,
+          sizeBytes: 0,
+          fileInChatPath: desiredPath);
       updateElm.shouldFetch = true;
-      await updateElm.updateContent(
-        p3p.filestoreelementBox,
-        p3p.userinfoBox,
-        roomId,
-      );
+      await updateElm.updateContent(p3p);
 
       return updateElm;
     }

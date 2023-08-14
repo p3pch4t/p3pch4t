@@ -25,7 +25,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void loadMessages() async {
-    final newMsgs = await userInfo.getMessages(p3p.messageBox);
+    final newMsgs = await userInfo.getMessages(p3p);
     setState(() {
       msgs = newMsgs;
     });
@@ -45,7 +45,7 @@ class _ChatPageState extends State<ChatPage> {
                     builder: (context) {
                       return FileManager(
                         fileStore: userInfo.fileStore,
-                        roomId: userInfo.publicKey.fingerprint,
+                        roomFingerprint: userInfo.publicKey.fingerprint,
                         chatroom: userInfo,
                       );
                     },

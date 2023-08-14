@@ -15,15 +15,15 @@ const csp =
     "default-src 'self'; style-src 'self' 'unsafe-inline' blob: ; font-src 'self' data: blob: ; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: ; connect-src 'self' data: blob: ; img-src 'self' data: blob: ; media-src 'self' data: blob: ;webrtc 'block' ; ";
 
 class WebxdcFileView extends StatefulWidget {
-  const WebxdcFileView(
-      {Key? key,
-      required this.file,
-      required this.roomId,
-      required this.chatroom})
-      : super(key: key);
+  const WebxdcFileView({
+    Key? key,
+    required this.file,
+    required this.roomFingerprint,
+    required this.chatroom,
+  }) : super(key: key);
 
   final FileStoreElement file;
-  final String roomId;
+  final String roomFingerprint;
   final UserInfo chatroom;
 
   @override
@@ -32,7 +32,7 @@ class WebxdcFileView extends StatefulWidget {
 
 class _WebxdcFileViewState extends State<WebxdcFileView> {
   late final file = widget.file;
-  late final roomId = widget.roomId;
+  late final roomFingerprint = widget.roomFingerprint;
   late final chatroom = widget.chatroom;
   late final HttpServer server;
   late final Archive archive;
@@ -145,7 +145,7 @@ window.webxdc = {
     if (file.downloadedSizeBytes != file.sizeBytes) {
       return FileView(
         file: file,
-        roomId: roomId,
+        roomFingerprint: roomFingerprint,
       );
     }
     if (Platform.isAndroid) {

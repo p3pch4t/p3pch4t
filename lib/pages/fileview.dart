@@ -11,10 +11,10 @@ class FileView extends StatefulWidget {
   const FileView({
     Key? key,
     required this.file,
-    required this.roomId,
+    required this.roomFingerprint,
   }) : super(key: key);
   final FileStoreElement file;
-  final String roomId;
+  final String roomFingerprint;
 
   @override
   State<FileView> createState() => _FileViewState();
@@ -22,7 +22,7 @@ class FileView extends StatefulWidget {
 
 class _FileViewState extends State<FileView> {
   late final file = widget.file;
-  late final roomId = widget.roomId;
+  late final roomFingerprint = widget.roomFingerprint;
 
   late final pathCtrl = TextEditingController(text: file.path);
 
@@ -89,8 +89,9 @@ class _FileViewState extends State<FileView> {
   }
 
   Future<void> saveElement() async {
+    print('saveElement:');
     file.path = pathCtrl.text;
-    await file.save(p3p.filestoreelementBox, p3p.userinfoBox, roomId);
+    await file.save(p3p, shouldIntroduce: true);
     setState(() {});
   }
 }

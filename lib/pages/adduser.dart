@@ -50,7 +50,7 @@ class _AddUserPageState extends State<AddUserPage> {
             ),
             OutlinedButton(
               onPressed: () async {
-                final ui = await UserInfo.create(pkCtrl.text, p3p.userinfoBox);
+                final ui = await UserInfo.create(p3p, pkCtrl.text);
                 if (ui == null) {
                   return;
                 }

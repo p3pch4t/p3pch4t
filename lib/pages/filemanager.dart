@@ -14,11 +14,11 @@ class FileManager extends StatefulWidget {
   const FileManager({
     Key? key,
     required this.fileStore,
-    required this.roomId,
+    required this.roomFingerprint,
     required this.chatroom,
   }) : super(key: key);
   final FileStore fileStore;
-  final String roomId;
+  final String roomFingerprint;
   final UserInfo chatroom;
 
   @override
@@ -27,7 +27,7 @@ class FileManager extends StatefulWidget {
 
 class _FileManagerState extends State<FileManager> {
   late final fileStore = widget.fileStore;
-  late final roomId = widget.roomId;
+  late final roomFingerprint = widget.roomFingerprint;
   late final chatroom = widget.chatroom;
 
   List<FileStoreElement> files = [];
@@ -40,8 +40,7 @@ class _FileManagerState extends State<FileManager> {
   }
 
   void loadFiles() async {
-    final newFiles =
-        await fileStore.getFileStoreElement(p3p.filestoreelementBox);
+    final newFiles = await fileStore.getFileStoreElement(p3p);
     setState(() {
       files = newFiles;
     });
@@ -79,7 +78,7 @@ class _FileManagerState extends State<FileManager> {
             return renderDirectory(inScopeDirectories[index]);
           }
           return renderFile(
-              inScopeFiles[index - inScopeDirectories.length], roomId);
+              inScopeFiles[index - inScopeDirectories.length], roomFingerprint);
         },
       ),
       floatingActionButton: FloatingActionButton(onPressed: () async {
@@ -91,14 +90,12 @@ class _FileManagerState extends State<FileManager> {
           String dateSlug =
               "${today.year.toString()}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
           await fileStore.putFileStoreElement(
-            p3p.filestoreelementBox,
-            p3p.userinfoBox,
-            File(file.path!),
-            FileStoreElement.calcSha512Sum(
+            p3p,
+            localFile: File(file.path!),
+            localFileSha512sum: FileStoreElement.calcSha512Sum(
                 await File(file.path!).readAsBytes()),
-            await File(file.path!).length(),
-            p.join('/Unsort', dateSlug, file.name),
-            p3p.fileStorePath,
+            sizeBytes: await File(file.path!).length(),
+            fileInChatPath: '/Unsort/$dateSlug/${file.name}',
           );
           loadFiles();
         }
@@ -107,7 +104,7 @@ class _FileManagerState extends State<FileManager> {
     );
   }
 
-  Card renderFile(FileStoreElement file, String roomId) {
+  Card renderFile(FileStoreElement file, String roomFingerprint) {
     return Card(
       child: ListTile(
         leading: const Icon(Icons.description),
@@ -122,7 +119,7 @@ class _FileManagerState extends State<FileManager> {
             MaterialPageRoute(
               builder: (context) => FileView(
                 file: file,
-                roomId: roomId,
+                roomFingerprint: roomFingerprint,
               ),
             ),
           );
@@ -135,12 +132,12 @@ class _FileManagerState extends State<FileManager> {
                 return switch (file.path.split('.').reversed.first) {
                   "xdc" => WebxdcFileView(
                       file: file,
-                      roomId: roomId,
+                      roomFingerprint: roomFingerprint,
                       chatroom: chatroom,
                     ),
                   _ => FileView(
                       file: file,
-                      roomId: roomId,
+                      roomFingerprint: roomFingerprint,
                     )
                 };
               },

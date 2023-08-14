@@ -3,6 +3,8 @@ import 'package:p3pch4t/main.dart';
 import 'package:p3p/p3p.dart';
 import 'package:p3pch4t/pages/adduser.dart';
 import 'package:p3pch4t/pages/chatpage.dart';
+import 'package:p3pch4t/pages/userinfosettings.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -27,6 +29,8 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  bool updateAvailable = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,18 +39,24 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Column(
         children: [
-          Card(
-            child: ListTile(
-              title: const Text("New version is available!"),
-              subtitle: SizedBox(
-                width: double.maxFinite,
-                child: OutlinedButton(
-                  onPressed: () {},
-                  child: const Text("Update"),
+          if (updateAvailable)
+            Card(
+              child: ListTile(
+                title: const Text("New version is available!"),
+                subtitle: SizedBox(
+                  width: double.maxFinite,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      launchUrl(
+                        Uri.parse("https://static.mrcyjanek.net/p3p/latest"),
+                        mode: LaunchMode.externalApplication,
+                      );
+                    },
+                    child: const Text("Update"),
+                  ),
                 ),
               ),
             ),
-          ),
           Expanded(
             child: ListView.builder(
               itemCount: users.length,
@@ -56,11 +66,24 @@ class _HomePageState extends State<HomePage> {
                     onTap: () async {
                       await Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) =>
-                              ChatPage(userInfo: users[index]),
+                          builder: (context) => ChatPage(
+                            userInfo: p3p.getUserInfo(
+                                users[index].publicKey.fingerprint)!,
+                          ),
                         ),
                       );
                       loadUsers();
+                    },
+                    onLongPress: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return UserInfoPage(
+                                userInfo: p3p.getUserInfo(
+                                    users[index].publicKey.fingerprint)!);
+                          },
+                        ),
+                      );
                     },
                     title: Text("$index. ${users[index].name}"),
                     subtitle: Text(users[index].publicKey.fingerprint),
