@@ -81,7 +81,7 @@ class _WebxdcFileViewState extends State<WebxdcFileView> {
     if (path == "") path = "index.html";
     switch (path) {
       case "webxdc.js" || "/webxdc.js":
-        final si = (await p3p.getSelfInfo());
+        final si = (await p3p!.getSelfInfo());
         return Response.ok('''
 console.log("[webxdc.js]: loaded native implementation on browser side");
 

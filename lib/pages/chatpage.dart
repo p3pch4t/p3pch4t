@@ -21,11 +21,34 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     loadMessages();
+    loadMessageCallback();
     super.initState();
   }
 
+  @override
+  void dispose() {
+    p3p!.onMessageCallback.removeAt(_messageCallbackIndex);
+    super.dispose();
+  }
+
+  int _messageCallbackIndex = -1;
+  void loadMessageCallback() {
+    p3p!.onMessageCallback.add(_messageCallback);
+    setState(() {
+      _messageCallbackIndex = p3p!.onMessageCallback.length - 1;
+    });
+  }
+
+  void _messageCallback(P3p p3p, Message msg, UserInfo ui) {
+    if (ui.id != userInfo.id) return; // only current open chat events
+    loadMessages();
+    Future.delayed(Duration.zero).then((value) => loadMessages());
+    Future.delayed(const Duration(seconds: 1)).then((value) => loadMessages());
+  }
+
   void loadMessages() async {
-    final newMsgs = await userInfo.getMessages(p3p);
+    final newMsgs = await userInfo.getMessages(p3p!);
+    if (!mounted) return;
     setState(() {
       msgs = newMsgs;
     });
@@ -87,7 +110,7 @@ class _ChatPageState extends State<ChatPage> {
             width: double.maxFinite,
             child: TextField(
               onSubmitted: (value) async {
-                await p3p.sendMessage(userInfo, msgCtrl.text,
+                await p3p!.sendMessage(userInfo, msgCtrl.text,
                     type: MessageType.text);
                 loadMessages();
                 msgCtrl.clear();

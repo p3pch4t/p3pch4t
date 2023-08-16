@@ -89,9 +89,11 @@ class _FileViewState extends State<FileView> {
   }
 
   Future<void> saveElement() async {
-    print('saveElement:');
+    if (kDebugMode) {
+      print('saveElement:');
+    }
     file.path = pathCtrl.text;
-    await file.save(p3p, shouldIntroduce: true);
+    await file.save(p3p!, shouldIntroduce: true);
     setState(() {});
   }
 }

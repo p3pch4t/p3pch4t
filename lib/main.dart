@@ -1,51 +1,39 @@
-import 'dart:io';
-
-import 'package:dart_pg/dart_pg.dart';
 import 'package:flutter/material.dart';
 import 'package:p3p/p3p.dart';
+import 'package:p3pch4t/consts.dart';
 import 'package:p3pch4t/pages/home.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
+import 'package:p3pch4t/pages/landing.dart';
+import 'package:p3pch4t/service.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-late final P3p p3p;
+P3p? p3p;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final Directory appDocumentsDir = await getApplicationDocumentsDirectory();
   final SharedPreferences prefs = await SharedPreferences.getInstance();
-
   if (prefs.getString("priv_key") == null) {
-    debugPrint("generating privkey...");
-    final privkey = await OpenPGP.generateKey(
-        ['name <user@example.org>'], 'no_passpharse',
-        rsaKeySize: RSAKeySize.s4096);
-    prefs.setString("priv_key", privkey.armor());
+    runApp(const MyApp(landing: true));
+    return;
   }
-  debugPrint("starting p3p...");
-
-  p3p = await P3p.createSession(
-    p.join(appDocumentsDir.path, "p3pch4t"),
-    prefs.getString("priv_key")!,
-    "no_passpharse",
-  );
-  runApp(const MyApp());
+  await Permission.notification.request();
+  await initializeService();
+  runApp(const MyApp(landing: false));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
+  const MyApp({super.key, required this.landing});
+  final bool landing;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'P3pCh4t',
+      title: 'P3pCh4t $P3PCH4T_VERSION',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
       darkTheme: ThemeData.dark(useMaterial3: true),
-      home: const HomePage(),
+      home: landing ? const LandingPage() : const HomePage(),
     );
   }
 }

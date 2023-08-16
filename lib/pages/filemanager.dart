@@ -40,7 +40,7 @@ class _FileManagerState extends State<FileManager> {
   }
 
   void loadFiles() async {
-    final newFiles = await fileStore.getFileStoreElement(p3p);
+    final newFiles = await fileStore.getFileStoreElement(p3p!);
     setState(() {
       files = newFiles;
     });
@@ -90,7 +90,7 @@ class _FileManagerState extends State<FileManager> {
           String dateSlug =
               "${today.year.toString()}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
           await fileStore.putFileStoreElement(
-            p3p,
+            p3p!,
             localFile: File(file.path!),
             localFileSha512sum: FileStoreElement.calcSha512Sum(
                 await File(file.path!).readAsBytes()),

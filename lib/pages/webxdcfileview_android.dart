@@ -80,7 +80,7 @@ class _WebxdcFileViewAndroidState extends State<WebxdcFileViewAndroid> {
           final jBody = json.decode(p0.message);
           if (jBody["update"]["info"] != null &&
               jBody["update"]["info"] != "") {
-            p3p.sendMessage(
+            p3p!.sendMessage(
               widget.chatroom,
               jBody["update"]["info"],
               type: MessageType.service,
@@ -100,7 +100,7 @@ class _WebxdcFileViewAndroidState extends State<WebxdcFileViewAndroid> {
           );
           final lines = await updateElm.file.readAsLines();
           await updateElm.updateContent(
-            p3p,
+            p3p!,
           );
           final jsPayload = '''
 for (let i = 0; i < window.webxdc.setUpdateListenerList.length; i++) {
@@ -197,7 +197,7 @@ window.webxdc.setUpdateListenerList[${jBody["listId"] - 1}]({
   }
 
   Future<FileStoreElement?> getUpdateElement() async {
-    final elms = await widget.chatroom.fileStore.getFileStoreElement(p3p);
+    final elms = await widget.chatroom.fileStore.getFileStoreElement(p3p!);
     final wpath = widget.webxdcFile.path;
     final desiredPath = p.normalize((wpath.split('/')
           ..removeLast()
@@ -210,13 +210,13 @@ window.webxdc.setUpdateListenerList[${jBody["listId"] - 1}]({
       }
     }
     if (updateElm == null) {
-      updateElm = await widget.chatroom.fileStore.putFileStoreElement(p3p,
+      updateElm = await widget.chatroom.fileStore.putFileStoreElement(p3p!,
           localFile: null,
           localFileSha512sum: null,
           sizeBytes: 0,
           fileInChatPath: desiredPath);
       updateElm.shouldFetch = true;
-      await updateElm.updateContent(p3p);
+      await updateElm.updateContent(p3p!);
 
       return updateElm;
     }

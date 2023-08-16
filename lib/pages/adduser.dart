@@ -17,7 +17,7 @@ class _AddUserPageState extends State<AddUserPage> {
 
   @override
   void initState() {
-    p3p.getSelfInfo().then((value) {
+    p3p!.getSelfInfo().then((value) {
       setState(() => selfUi = value);
     });
     super.initState();
@@ -50,7 +50,7 @@ class _AddUserPageState extends State<AddUserPage> {
             ),
             OutlinedButton(
               onPressed: () async {
-                final ui = await UserInfo.create(p3p, pkCtrl.text);
+                final ui = await UserInfo.create(p3p!, pkCtrl.text);
                 if (ui == null) {
                   return;
                 }

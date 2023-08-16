@@ -3,8 +3,9 @@ import 'package:p3pch4t/main.dart';
 import 'package:p3p/p3p.dart';
 import 'package:p3pch4t/pages/adduser.dart';
 import 'package:p3pch4t/pages/chatpage.dart';
+import 'package:p3pch4t/pages/settings.dart';
 import 'package:p3pch4t/pages/userinfosettings.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:p3pch4t/pages/widgets/versionwidget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -19,11 +20,38 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     loadUsers();
+    loadEventCallback();
     super.initState();
   }
 
+  @override
+  void dispose() {
+    p3p!.onEventCallback.removeAt(_onEventCallbackIndex);
+    super.dispose();
+  }
+
+  int _onEventCallbackIndex = -1;
+
+  void loadEventCallback() {
+    p3p!.onEventCallback.add(_eventCallback);
+    setState(() {
+      _onEventCallbackIndex = p3p!.onEventCallback.length - 1;
+    });
+  }
+
+  Future<bool> _eventCallback(P3p p3p, Event evt) async {
+    if (evt.eventType != EventType.introduce) return false;
+    loadUsers();
+    Future.delayed(Duration.zero).then((value) => loadUsers());
+    Future.delayed(const Duration(seconds: 1)).then((value) => loadUsers());
+    // Why three times? Because I have no damn idea
+    // when will the event finish processing...
+    // I'll address that.. at some point.
+    return false;
+  }
+
   void loadUsers() async {
-    final value = await p3p.getUsers();
+    final value = await p3p!.getUsers();
     setState(() {
       users = value;
     });
@@ -36,27 +64,22 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("p3pch4t"),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const SettingsPage(),
+                ),
+              );
+            },
+            icon: const Icon(Icons.settings),
+          )
+        ],
       ),
       body: Column(
         children: [
-          if (updateAvailable)
-            Card(
-              child: ListTile(
-                title: const Text("New version is available!"),
-                subtitle: SizedBox(
-                  width: double.maxFinite,
-                  child: OutlinedButton(
-                    onPressed: () {
-                      launchUrl(
-                        Uri.parse("https://static.mrcyjanek.net/p3p/latest"),
-                        mode: LaunchMode.externalApplication,
-                      );
-                    },
-                    child: const Text("Update"),
-                  ),
-                ),
-              ),
-            ),
+          const VersionWidget(),
           Expanded(
             child: ListView.builder(
               itemCount: users.length,
@@ -67,8 +90,9 @@ class _HomePageState extends State<HomePage> {
                       await Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => ChatPage(
-                            userInfo: p3p.getUserInfo(
-                                users[index].publicKey.fingerprint)!,
+                            userInfo: p3p!.getUserInfo(
+                              users[index].publicKey.fingerprint,
+                            )!,
                           ),
                         ),
                       );
@@ -79,8 +103,10 @@ class _HomePageState extends State<HomePage> {
                         MaterialPageRoute(
                           builder: (context) {
                             return UserInfoPage(
-                                userInfo: p3p.getUserInfo(
-                                    users[index].publicKey.fingerprint)!);
+                              userInfo: p3p!.getUserInfo(
+                                users[index].publicKey.fingerprint,
+                              )!,
+                            );
                           },
                         ),
                       );
