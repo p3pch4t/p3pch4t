@@ -1,0 +1,1 @@
+If you see this message it means that you didn't run build.sh to produce this build, instead you have probably just executed flutter build apk. This is fine but version information is missing.
