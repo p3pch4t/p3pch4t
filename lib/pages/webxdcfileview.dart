@@ -41,13 +41,22 @@ class _WebxdcFileViewState extends State<WebxdcFileView> {
 
   @override
   void initState() {
-    startLocalServer();
+    try {
+      startLocalServer();
+    } catch (e) {
+      print('[webxdc] startLocalServer: $e');
+    }
     super.initState();
   }
 
   @override
   void dispose() {
-    server.close();
+    try {
+      server.close();
+    } catch (e) {
+      print('[webxdc] server.close(): $e');
+    }
+
     super.dispose();
   }
 
@@ -151,7 +160,8 @@ window.webxdc = {
         body: LinearProgressIndicator(value: progress),
       );
     }
-    if (file.downloadedSizeBytes != file.sizeBytes) {
+    if (file.downloadedSizeBytes != file.sizeBytes ||
+        file.downloadedSizeBytes == 0) {
       return FileView(
         file: file,
         roomFingerprint: roomFingerprint,

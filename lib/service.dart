@@ -13,7 +13,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const notificationChannelId = 'p3pch4t_service';
 const notificationId = 777;
-
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
@@ -86,11 +85,13 @@ Future<void> onStart(ServiceInstance service) async {
   );
 
   print('called onStart:');
-  const lastId = -1;
+  int? lastId = -1;
   while (true) {
-    await Future.delayed(const Duration(seconds: 30));
+    await Future.delayed(const Duration(seconds: 15));
+
     final msg = await p3p!.db.getLastMessage();
     if (msg?.id == lastId) continue;
+    lastId = msg?.id;
     if (msg == null) continue;
     final user = await msg.getSender(p3p!);
     if (kDebugMode) {

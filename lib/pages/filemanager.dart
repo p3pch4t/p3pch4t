@@ -111,6 +111,8 @@ class _FileManagerState extends State<FileManager> {
 
   Card renderFile(FileStoreElement file, String roomFingerprint) {
     return Card(
+      color:
+          file.isDeleted ? Theme.of(context).colorScheme.errorContainer : null,
       child: ListTile(
         leading: const Icon(Icons.description),
         title: Text(

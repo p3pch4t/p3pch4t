@@ -188,7 +188,9 @@ window.webxdc.setUpdateListenerList[${jBody["listId"] - 1}]({
               ],
             )
           : null,
-      body: WebViewWidget(controller: controller),
+      body: SafeArea(
+        child: WebViewWidget(controller: controller),
+      ),
     );
   }
 
@@ -212,7 +214,7 @@ window.webxdc.setUpdateListenerList[${jBody["listId"] - 1}]({
     );
     FileStoreElement? updateElm;
     for (final felm in elms) {
-      if (felm.path == desiredPath) {
+      if (felm.path == desiredPath && !felm.isDeleted) {
         updateElm = felm;
       }
     }
