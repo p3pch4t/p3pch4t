@@ -4,7 +4,7 @@ import 'package:p3pch4t/main.dart';
 import 'package:p3pch4t/pages/filemanager.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({Key? key, required this.userInfo}) : super(key: key);
+  const ChatPage({required this.userInfo, super.key});
 
   final UserInfo userInfo;
 
@@ -39,14 +39,12 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
-  void _messageCallback(P3p p3p, Message msg, UserInfo ui) {
+  Future<void> _messageCallback(P3p p3p, Message msg, UserInfo ui) async {
     if (ui.id != userInfo.id) return; // only current open chat events
-    loadMessages();
-    Future.delayed(Duration.zero).then((value) => loadMessages());
-    Future.delayed(const Duration(seconds: 1)).then((value) => loadMessages());
+    await loadMessages();
   }
 
-  void loadMessages() async {
+  Future<void> loadMessages() async {
     final newMsgs = await userInfo.getMessages(p3p!);
     if (!mounted) return;
     setState(() {
@@ -59,24 +57,25 @@ class _ChatPageState extends State<ChatPage> {
     final rmsgs = msgs.reversed.toList();
     return Scaffold(
       appBar: AppBar(
-        title: Text(userInfo.name ?? "name unknown"),
+        title: Text(userInfo.name ?? 'name unknown'),
         actions: [
           IconButton(
-              onPressed: () async {
-                await Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return FileManager(
-                        fileStore: userInfo.fileStore,
-                        roomFingerprint: userInfo.publicKey.fingerprint,
-                        chatroom: userInfo,
-                      );
-                    },
-                  ),
-                );
-                loadMessages();
-              },
-              icon: const Icon(Icons.folder)),
+            onPressed: () async {
+              await Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) {
+                    return FileManager(
+                      fileStore: userInfo.fileStore,
+                      roomFingerprint: userInfo.publicKey.fingerprint,
+                      chatroom: userInfo,
+                    );
+                  },
+                ),
+              );
+              await loadMessages();
+            },
+            icon: const Icon(Icons.folder),
+          ),
         ],
       ),
       body: Column(
@@ -100,7 +99,7 @@ class _ChatPageState extends State<ChatPage> {
                       // subtitle: kDebugMode ? Text(rmsgs[index].debug()) : null,
                     ),
                   MessageType.service => Center(child: Text(rmsgs[index].text)),
-                  _ => const Text("Unsupported message..."),
+                  _ => const Text('Unsupported message...'),
                 };
               },
               shrinkWrap: true,
@@ -110,9 +109,11 @@ class _ChatPageState extends State<ChatPage> {
             width: double.maxFinite,
             child: TextField(
               onSubmitted: (value) async {
-                await p3p!.sendMessage(userInfo, msgCtrl.text,
-                    type: MessageType.text);
-                loadMessages();
+                await p3p!.sendMessage(
+                  userInfo,
+                  msgCtrl.text,
+                );
+                await loadMessages();
                 msgCtrl.clear();
               },
               controller: msgCtrl,

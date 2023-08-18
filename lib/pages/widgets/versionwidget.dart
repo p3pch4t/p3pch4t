@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:p3pch4t/consts.dart';
 import 'package:http/http.dart' as http;
+import 'package:p3pch4t/consts.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class VersionWidget extends StatefulWidget {
@@ -25,18 +25,18 @@ class _VersionWidgetState extends State<VersionWidget> {
     super.initState();
   }
 
-  void loadVersion() async {
+  Future<void> loadVersion() async {
     if (kDebugMode) {
       setState(() {
-        infoString = "Good luck friend";
+        infoString = 'Good luck friend';
       });
       return;
     }
 
     if (P3PCH4T_VERSION.contains('-dirty')) {
-      final gitChanges = await rootBundle.loadString("assets/git-changes.md");
+      final gitChanges = await rootBundle.loadString('assets/git-changes.md');
       setState(() {
-        infoString = "Running a dirty build";
+        infoString = 'Running a dirty build';
         extraInfo = 'You are running a _dirty_ build, which means that '
             'somebody handed you the app to test some feature.\n\n'
             'However - it is not recommended to use this kind of builds unless '
@@ -52,26 +52,26 @@ class _VersionWidgetState extends State<VersionWidget> {
     }
 
     try {
-      final String version = await http.read(
-          Uri.parse("https://p3p.mrcyjanek.net/archive/latest/version.txt"));
+      final version = await http.read(
+          Uri.parse('https://p3p.mrcyjanek.net/archive/latest/version.txt'),);
       if (version == P3PCH4T_VERSION) {
         return; // oki - we are on correct version
       }
       setState(
         () {
-          infoString = "New version if available!";
+          infoString = 'New version if available!';
           extraInfo =
-              "New version is available: **$version**. You are currently running on: $P3PCH4T_VERSION\n"
-              "It is important to use latest version to ensure network stability.\n"
-              "(Especially during beta).";
+              'New version is available: **$version**. You are currently running on: $P3PCH4T_VERSION\n'
+              'It is important to use latest version to ensure network stability.\n'
+              '(Especially during beta).';
         },
       );
     } catch (e) {
       setState(() {
-        infoString = "Unable to fetch update details";
+        infoString = 'Unable to fetch update details';
         extraInfo = 'There are 2 options\n'
-            '1. You are offline and we can\'t reach our update servers\n'
-            '2. The app was updated many times and you weren\'t online '
+            "1. You are offline and we can't reach our update servers\n"
+            "2. The app was updated many times and you weren't online "
             'and as a consequence update server got migrated. In that case '
             'you chould use the button below to update\n'
             '\n\n---- error ----\n\n$e';
@@ -114,11 +114,11 @@ class _VersionWidgetState extends State<VersionWidget> {
           child: OutlinedButton(
             onPressed: () {
               launchUrl(
-                Uri.parse("https://p3p.mrcyjanek.net/archive/latest/android"),
+                Uri.parse('https://p3p.mrcyjanek.net/archive/latest/android'),
                 mode: LaunchMode.externalApplication,
               );
             },
-            child: const Text("Update"),
+            child: const Text('Update'),
           ),
         ),
       ),

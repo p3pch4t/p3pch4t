@@ -4,7 +4,7 @@ import 'package:p3pch4t/helpers.dart';
 import 'package:p3pch4t/main.dart';
 
 class AddUserPage extends StatefulWidget {
-  const AddUserPage({Key? key}) : super(key: key);
+  const AddUserPage({super.key});
 
   @override
   State<AddUserPage> createState() => _AddUserPageState();
@@ -30,12 +30,12 @@ class _AddUserPageState extends State<AddUserPage> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add new contact"),
+        title: const Text('Add new contact'),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SelectableText("FP: ${selfUi!.publicKey.fingerprint}"),
+            SelectableText('FP: ${selfUi!.publicKey.fingerprint}'),
             SelectableText(
               selfUi!.publicKey.publickey,
               style: const TextStyle(fontSize: 7),
@@ -57,7 +57,7 @@ class _AddUserPageState extends State<AddUserPage> {
                 if (!mounted) return;
                 Navigator.of(context).pop();
               },
-              child: const Text("Add"),
+              child: const Text('Add'),
             ),
           ],
         ),

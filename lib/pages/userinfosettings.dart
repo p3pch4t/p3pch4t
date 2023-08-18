@@ -3,9 +3,9 @@ import 'package:p3p/p3p.dart';
 
 class UserInfoPage extends StatelessWidget {
   const UserInfoPage({
-    Key? key,
     required this.userInfo,
-  }) : super(key: key);
+    super.key,
+  });
 
   final UserInfo userInfo;
 
@@ -19,7 +19,7 @@ class UserInfoPage extends StatelessWidget {
         child: Column(
           children: [
             SelectableText('debug info about object ${userInfo.id}\n'
-                'endpoints: ${userInfo.endpoint.toList().toString()}'),
+                'endpoints: ${userInfo.endpoint.toList()}'),
           ],
         ),
       ),

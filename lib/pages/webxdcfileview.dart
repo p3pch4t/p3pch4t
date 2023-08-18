@@ -3,24 +3,24 @@ import 'dart:math';
 
 import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
+import 'package:mime/mime.dart';
 import 'package:p3p/p3p.dart';
 import 'package:p3pch4t/main.dart';
 import 'package:p3pch4t/pages/fileview.dart';
 import 'package:p3pch4t/pages/webxdcfileview_android.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
-import 'package:mime/mime.dart';
 
 const csp =
     "default-src 'self'; style-src 'self' 'unsafe-inline' blob: ; font-src 'self' data: blob: ; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: ; connect-src 'self' data: blob: ; img-src 'self' data: blob: ; media-src 'self' data: blob: ;webrtc 'block' ; ";
 
 class WebxdcFileView extends StatefulWidget {
   const WebxdcFileView({
-    Key? key,
     required this.file,
     required this.roomFingerprint,
     required this.chatroom,
-  }) : super(key: key);
+    super.key,
+  });
 
   final FileStoreElement file;
   final String roomFingerprint;
@@ -57,9 +57,9 @@ class _WebxdcFileViewState extends State<WebxdcFileView> {
     });
   }
 
-  void startLocalServer() async {
+  Future<void> startLocalServer() async {
     updateProgress(0.1);
-    var handler = const Pipeline()
+    final handler = const Pipeline()
         .addMiddleware(logRequests())
         .addHandler(_processRequest);
 
@@ -77,12 +77,13 @@ class _WebxdcFileViewState extends State<WebxdcFileView> {
   }
 
   Future<Response> _processRequest(Request request) async {
-    String path = request.url.path;
-    if (path == "") path = "index.html";
+    var path = request.url.path;
+    if (path == '') path = 'index.html';
     switch (path) {
-      case "webxdc.js" || "/webxdc.js":
-        final si = (await p3p!.getSelfInfo());
-        return Response.ok('''
+      case 'webxdc.js' || '/webxdc.js':
+        final si = await p3p!.getSelfInfo();
+        return Response.ok(
+          '''
 console.log("[webxdc.js]: loaded native implementation on browser side");
 
 window.webxdc = {
@@ -113,22 +114,30 @@ window.webxdc = {
   setUpdateListenerList: [],
   sleep: (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 }
-''', headers: {"Content-Type": "application/javascript"});
-      case "__debuginfo" || "/__debuginfo":
-        return Response.ok('''
+''',
+          headers: {'Content-Type': 'application/javascript'},
+        );
+      case '__debuginfo' || '/__debuginfo':
+        return Response.ok(
+          '''
 <a href="/webxdc.js">webxdc.js</a><br />
-''', headers: {
-          "Content-Type": "text/html",
-        });
+''',
+          headers: {
+            'Content-Type': 'text/html',
+          },
+        );
     }
-    for (var file in archive.files) {
+    for (final file in archive.files) {
       if (file.name == path) {
         final data = file.content; // !.readBytes(file.size).toUint8List();
 
-        return Response.ok(data, headers: {
-          "Content-Type": lookupMimeType(path) ?? 'application/octet-stream',
-          "Content-Security-Policy": csp
-        });
+        return Response.ok(
+          data,
+          headers: {
+            'Content-Type': lookupMimeType(path) ?? 'application/octet-stream',
+            'Content-Security-Policy': csp
+          },
+        );
       }
     }
     return Response.ok('requiest for $path');

@@ -2,17 +2,17 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:p3p/p3p.dart';
 import 'package:open_file/open_file.dart';
+import 'package:p3p/p3p.dart';
 import 'package:p3pch4t/main.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class FileView extends StatefulWidget {
   const FileView({
-    Key? key,
     required this.file,
     required this.roomFingerprint,
-  }) : super(key: key);
+    super.key,
+  });
   final FileStoreElement file;
   final String roomFingerprint;
 
@@ -49,7 +49,7 @@ class _FileViewState extends State<FileView> {
             SizedBox(
               width: double.maxFinite,
               child: OutlinedButton(
-                child: const Text("open (may not work)"),
+                child: const Text('open (may not work)'),
                 onPressed: () async {
                   await Permission.manageExternalStorage.request().isGranted;
                   final result = await OpenFile.open(file.localPath);
@@ -60,26 +60,26 @@ class _FileViewState extends State<FileView> {
               ),
             ),
             CheckboxListTile(
-              title: const Text("Should sync"),
+              title: const Text('Should sync'),
               value: file.shouldFetch,
               onChanged: (bool? value) async {
                 file.shouldFetch = value!;
-                saveElement();
+                await saveElement();
               },
             ),
             CheckboxListTile(
-              title: const Text("Is deleted?"),
+              title: const Text('Is deleted?'),
               value: file.isDeleted,
               onChanged: (bool? value) async {
                 file.isDeleted = value!;
-                saveElement();
+                await saveElement();
               },
             ),
             SizedBox(
               width: double.maxFinite,
               child: OutlinedButton(
                 onPressed: saveElement,
-                child: const Text("Save"),
+                child: const Text('Save'),
               ),
             ),
           ],
@@ -93,7 +93,7 @@ class _FileViewState extends State<FileView> {
       print('saveElement:');
     }
     file.path = pathCtrl.text;
-    await file.save(p3p!, shouldIntroduce: true);
+    await file.save(p3p!);
     setState(() {});
   }
 }

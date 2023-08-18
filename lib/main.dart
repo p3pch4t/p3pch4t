@@ -11,8 +11,8 @@ P3p? p3p;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
-  if (prefs.getString("priv_key") == null) {
+  final prefs = await SharedPreferences.getInstance();
+  if (prefs.getString('priv_key') == null) {
     runApp(const MyApp(landing: true));
     return;
   }
@@ -22,7 +22,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key, required this.landing});
+  const MyApp({required this.landing, super.key});
   final bool landing;
   @override
   Widget build(BuildContext context) {

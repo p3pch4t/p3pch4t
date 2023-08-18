@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
@@ -6,10 +5,11 @@ import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_background_service_android/flutter_background_service_android.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:p3p/p3p.dart';
+import 'package:p3p/src/database/drift.dart' as db;
 import 'package:p3pch4t/main.dart';
+import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:path/path.dart' as p;
 
 const notificationChannelId = 'p3pch4t_service';
 const notificationId = 777;
@@ -45,9 +45,6 @@ Future<void> initializeService() async {
     androidConfiguration: AndroidConfiguration(
       // this will be executed when app is in foreground or background in separated isolate
       onStart: onStart,
-
-      // auto start service
-      autoStart: true,
       isForegroundMode: true,
 
       notificationChannelId:
@@ -65,48 +62,50 @@ Future<void> initializeService() async {
   );
 }
 
-void onStart(ServiceInstance service) async {
+Future<void> onStart(ServiceInstance service) async {
   DartPluginRegistrant.ensureInitialized();
   if (p3p == null) {
     print("NOTE: it looks like p3pch4t is not loaded, let's start it");
-    updateNotification(service, "Starting", "p3pch4t is starting");
+    await updateNotification(service, 'Starting', 'p3pch4t is starting');
     await startP3p();
-    print("p3p started...");
+    print('p3p started...');
   }
   if (p3p == null) {
-    print("NOTE: p3p failed to start. for reason unknown to us. Sorry.");
-    updateNotification(service, "Failed to start",
-        "p3p was unable to initialize. That's all we know");
+    print('NOTE: p3p failed to start. for reason unknown to us. Sorry.');
+    await updateNotification(
+      service,
+      'Failed to start',
+      "p3p was unable to initialize. That's all we know",
+    );
     await Future.delayed(const Duration(seconds: 30));
   }
-  updateNotification(
-      service, "P3pch4t", "P3pch4t is running in the background");
+  await updateNotification(
+    service,
+    'P3pch4t',
+    'P3pch4t is running in the background',
+  );
 
-  print("called onStart:");
-  int lastId = 0;
+  print('called onStart:');
+  const lastId = -1;
   while (true) {
-    await Future.delayed(const Duration(seconds: 5));
-    final msg = p3p!.messageBox
-        .query()
-        .order(Message_.id, flags: Order.descending)
-        .build()
-        .findFirst();
+    await Future.delayed(const Duration(seconds: 30));
+    final msg = await p3p!.db.getLastMessage();
     if (msg?.id == lastId) continue;
     if (msg == null) continue;
-    final user = msg.getSender(p3p!);
+    final user = await msg.getSender(p3p!);
     if (kDebugMode) {
-      updateNotification(
+      await updateNotification(
         service,
-        "DEBUG",
-        "${msg.id}: ${user.name} - ${msg.text}",
+        'DEBUG',
+        '${msg.id}: ${user.name} - ${msg.text}',
       );
     }
     final msgGroup = AndroidNotificationChannelGroup(
-      "msgs-${user.publicKey.fingerprint}",
+      'msgs-${user.publicKey.fingerprint}',
       '${user.name} messages',
     );
     final msgChannel = AndroidNotificationChannel(
-      "msgs-${user.publicKey.fingerprint}",
+      'msgs-${user.publicKey.fingerprint}',
       '${user.name} messages',
       // groupId: "msgs-${user.publicKey.fingerprint}",
       description:
@@ -122,13 +121,13 @@ void onStart(ServiceInstance service) async {
             AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannelGroup(msgGroup);
     final notifId = 1000 + msg.id;
-    FlutterLocalNotificationsPlugin().show(
+    await FlutterLocalNotificationsPlugin().show(
       notifId,
       user.name,
       msg.text,
       NotificationDetails(
         android: AndroidNotificationDetails(
-          "msgs-${user.publicKey.fingerprint}",
+          'msgs-${user.publicKey.fingerprint}',
           '${user.name} messages',
           icon: 'ic_bg_service_small',
           importance: Importance.high,
@@ -139,14 +138,14 @@ void onStart(ServiceInstance service) async {
   }
 }
 
-void updateNotification(
+Future<void> updateNotification(
   ServiceInstance service,
   String title,
   String description,
 ) async {
   if (service is AndroidServiceInstance) {
     if (await service.isForegroundService()) {
-      flutterLocalNotificationsPlugin.show(
+      await flutterLocalNotificationsPlugin.show(
         notificationId,
         title,
         description,
@@ -164,12 +163,15 @@ void updateNotification(
 }
 
 Future<void> startP3p() async {
-  print("startP3p: starting P3pch4t");
-  final Directory appDocumentsDir = await getApplicationDocumentsDirectory();
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  print('startP3p: starting P3pch4t');
+  final appDocumentsDir = await getApplicationDocumentsDirectory();
+  final prefs = await SharedPreferences.getInstance();
   p3p = await P3p.createSession(
-    p.join(appDocumentsDir.path, "p3pch4t"),
-    prefs.getString("priv_key")!,
-    prefs.getString("priv_passpharse") ?? "no_passpharse",
+    p.join(appDocumentsDir.path, 'p3pch4t'),
+    prefs.getString('priv_key')!,
+    prefs.getString('priv_passpharse') ?? 'no_passpharse',
+    db.DatabaseImplDrift(
+      dbFolder: p.join(appDocumentsDir.path, 'p3pch4t-dbdrift'),
+    ),
   );
 }

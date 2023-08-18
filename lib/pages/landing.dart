@@ -8,7 +8,7 @@ import 'package:p3pch4t/service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LandingPage extends StatefulWidget {
-  const LandingPage({Key? key}) : super(key: key);
+  const LandingPage({super.key});
 
   @override
   State<LandingPage> createState() => _LandingPageState();
@@ -22,20 +22,20 @@ class _LandingPageState extends State<LandingPage> {
     if (isLoading) return const LoadingPlaceholder();
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Welcome to p3pch4t!"),
+        title: const Text('Welcome to p3pch4t!'),
       ),
       body: Column(
         children: [
-          const Text("Welcome to p3pch4t."),
-          const Text("Do you have an account? If yes "
-              "press restore below, otherwise Register"),
+          const Text('Welcome to p3pch4t.'),
+          const Text('Do you have an account? If yes '
+              'press restore below, otherwise Register'),
           const Spacer(),
           const Divider(),
           Row(
             children: [
               TextButton(
                 onPressed: () {},
-                child: const Text("Restore"),
+                child: const Text('Restore'),
               ),
               const Spacer(),
               OutlinedButton(
@@ -43,14 +43,14 @@ class _LandingPageState extends State<LandingPage> {
                   setState(() {
                     isLoading = true;
                   });
-                  final SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
+                  final prefs = await SharedPreferences.getInstance();
 
-                  debugPrint("generating privkey...");
+                  debugPrint('generating privkey...');
                   final privkey = await OpenPGP.generateKey(
-                      ['name <user@example.org>'], 'no_passpharse',
-                      rsaKeySize: RSAKeySize.s4096);
-                  prefs.setString("priv_key", privkey.armor());
+                    ['name <user@example.org>'],
+                    'no_passpharse',
+                  );
+                  await prefs.setString('priv_key', privkey.armor());
                   setState(() {
                     isLoading = false;
                   });
@@ -58,13 +58,13 @@ class _LandingPageState extends State<LandingPage> {
                     await Future.delayed(const Duration(seconds: 1));
                     exit(1);
                   }
-                  Navigator.of(context).pushReplacement(
+                  await Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
                       builder: (context) => const HomePage(),
                     ),
                   );
                 },
-                child: const Text("Register"),
+                child: const Text('Register'),
               )
             ],
           ),
@@ -75,7 +75,7 @@ class _LandingPageState extends State<LandingPage> {
 }
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -91,7 +91,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Login"),
+        title: const Text('Login'),
       ),
       body: Column(
         children: [
@@ -100,9 +100,8 @@ class _LoginPageState extends State<LoginPage> {
             child: TextField(
               controller: privateKeyCtrl,
               maxLines: null,
-              minLines: null,
               decoration: const InputDecoration(
-                hintText: "Your private key",
+                hintText: 'Your private key',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -110,9 +109,8 @@ class _LoginPageState extends State<LoginPage> {
           TextField(
             controller: passwordCtrl,
             maxLines: null,
-            minLines: null,
             decoration: const InputDecoration(
-              hintText: "Your private key password",
+              hintText: 'Your private key password',
               border: OutlineInputBorder(),
             ),
           ),
@@ -124,14 +122,16 @@ class _LoginPageState extends State<LoginPage> {
                       setState(() {
                         isLoading = true;
                       });
-                      final SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
+                      final prefs = await SharedPreferences.getInstance();
 
-                      debugPrint("loading privkey...");
+                      debugPrint('loading privkey...');
                       final privkey =
                           await OpenPGP.readPrivateKey(privateKeyCtrl.text);
-                      prefs.setString("priv_key", privkey.armor());
-                      prefs.setString("priv_passpharse", passwordCtrl.text);
+                      await prefs.setString('priv_key', privkey.armor());
+                      await prefs.setString(
+                        'priv_passpharse',
+                        passwordCtrl.text,
+                      );
                       setState(() {
                         isLoading = false;
                       });
@@ -141,7 +141,7 @@ class _LoginPageState extends State<LoginPage> {
                         exit(1);
                       }
 
-                      Navigator.of(context).pushReplacement(
+                      await Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
                           builder: (context) => const HomePage(),
                         ),
@@ -149,13 +149,13 @@ class _LoginPageState extends State<LoginPage> {
                     } catch (e) {
                       setState(() {
                         privateKeyCtrl.text =
-                            "Failed to restore session please make sure that "
-                            "the private key is valid."
-                            "\n\n---- error ----\n\n$e";
+                            'Failed to restore session please make sure that '
+                            'the private key is valid.'
+                            '\n\n---- error ----\n\n$e';
                       });
                     }
                   },
-            child: const Text("Continue"),
+            child: const Text('Continue'),
           ),
         ],
       ),

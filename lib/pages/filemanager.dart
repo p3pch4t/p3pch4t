@@ -12,11 +12,11 @@ import 'package:path/path.dart' as p;
 
 class FileManager extends StatefulWidget {
   const FileManager({
-    Key? key,
     required this.fileStore,
     required this.roomFingerprint,
     required this.chatroom,
-  }) : super(key: key);
+    super.key,
+  });
   final FileStore fileStore;
   final String roomFingerprint;
   final UserInfo chatroom;
@@ -31,7 +31,7 @@ class _FileManagerState extends State<FileManager> {
   late final chatroom = widget.chatroom;
 
   List<FileStoreElement> files = [];
-  String path = "/";
+  String path = '/';
 
   @override
   void initState() {
@@ -39,7 +39,7 @@ class _FileManagerState extends State<FileManager> {
     super.initState();
   }
 
-  void loadFiles() async {
+  Future<void> loadFiles() async {
     final newFiles = await fileStore.getFileStoreElement(p3p!);
     setState(() {
       files = newFiles;
@@ -50,13 +50,13 @@ class _FileManagerState extends State<FileManager> {
   Widget build(BuildContext context) {
     final inScopeAll = files.where((elm) => elm.path.startsWith(path)).toList();
     var inScopeDirectories = <String>[];
-    if (path != "/") {
-      inScopeDirectories.add("..");
+    if (path != '/') {
+      inScopeDirectories.add('..');
     }
-    for (var file in inScopeAll) {
+    for (final file in inScopeAll) {
       if (file.path == p.join(path, p.basename(file.path))) continue;
 
-      String fs1 = file.path.substring(path.length);
+      var fs1 = file.path.substring(path.length);
       if (fs1.startsWith('/')) fs1 = fs1.substring(1);
 
       inScopeDirectories.add(fs1.substring(0, fs1.indexOf('/')));
@@ -78,29 +78,34 @@ class _FileManagerState extends State<FileManager> {
             return renderDirectory(inScopeDirectories[index]);
           }
           return renderFile(
-              inScopeFiles[index - inScopeDirectories.length], roomFingerprint);
+            inScopeFiles[index - inScopeDirectories.length],
+            roomFingerprint,
+          );
         },
       ),
-      floatingActionButton: FloatingActionButton(onPressed: () async {
-        FilePickerResult? result = await FilePicker.platform.pickFiles();
-        if (result == null) return;
-        if (result.files.isEmpty) return;
-        for (var file in result.files) {
-          DateTime today = DateTime.now();
-          String dateSlug =
-              "${today.year.toString()}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
-          await fileStore.putFileStoreElement(
-            p3p!,
-            localFile: File(file.path!),
-            localFileSha512sum: FileStoreElement.calcSha512Sum(
-                await File(file.path!).readAsBytes()),
-            sizeBytes: await File(file.path!).length(),
-            fileInChatPath: '/Unsort/$dateSlug/${file.name}',
-          );
-          loadFiles();
-        }
-        loadFiles();
-      }),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result = await FilePicker.platform.pickFiles();
+          if (result == null) return;
+          if (result.files.isEmpty) return;
+          for (final file in result.files) {
+            final today = DateTime.now();
+            final dateSlug =
+                "${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
+            await fileStore.putFileStoreElement(
+              p3p!,
+              localFile: File(file.path!),
+              localFileSha512sum: FileStoreElement.calcSha512Sum(
+                await File(file.path!).readAsBytes(),
+              ),
+              sizeBytes: await File(file.path!).length(),
+              fileInChatPath: '/Unsort/$dateSlug/${file.name}',
+            );
+            await loadFiles();
+          }
+          await loadFiles();
+        },
+      ),
     );
   }
 
@@ -113,7 +118,7 @@ class _FileManagerState extends State<FileManager> {
           maxLines: 1,
         ),
         subtitle:
-            Text("${(file.sizeBytes / 1024 / 1024).toStringAsFixed(4)} MiB"),
+            Text('${(file.sizeBytes / 1024 / 1024).toStringAsFixed(4)} MiB'),
         onLongPress: () async {
           await Navigator.of(context).push(
             MaterialPageRoute(
@@ -123,14 +128,14 @@ class _FileManagerState extends State<FileManager> {
               ),
             ),
           );
-          loadFiles();
+          await loadFiles();
         },
         onTap: () async {
           await Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) {
                 return switch (file.path.split('.').reversed.first) {
-                  "xdc" => WebxdcFileView(
+                  'xdc' => WebxdcFileView(
                       file: file,
                       roomFingerprint: roomFingerprint,
                       chatroom: chatroom,
@@ -143,7 +148,7 @@ class _FileManagerState extends State<FileManager> {
               },
             ),
           );
-          loadFiles();
+          await loadFiles();
         },
       ),
     );
