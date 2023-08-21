@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:p3p/p3p.dart';
 import 'package:p3pch4t/consts.dart';
@@ -16,7 +18,9 @@ void main() async {
     runApp(const MyApp(landing: true));
     return;
   }
-  await Permission.notification.request();
+  if (Platform.isAndroid) {
+    await Permission.notification.request();
+  }
   await initializeService();
   runApp(const MyApp(landing: false));
 }

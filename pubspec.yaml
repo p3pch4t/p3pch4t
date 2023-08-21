@@ -13,6 +13,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   p3p:
     path: ../p3p.dart
+  ssmdc:
+    path: ../ssmdc.dart
   path_provider: ^2.1.0
   dart_pg: ^1.1.5
   shared_preferences: ^2.2.0
@@ -30,6 +32,7 @@ dependencies:
   flutter_background_service: ^5.0.1
   sqlite3_flutter_libs: ^0.5.0
   flutter_background_service_android: ^6.0.1
+  uuid: ^3.0.7
 
 dev_dependencies:
   flutter_test:

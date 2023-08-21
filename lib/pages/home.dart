@@ -3,6 +3,7 @@ import 'package:p3p/p3p.dart';
 import 'package:p3pch4t/main.dart';
 import 'package:p3pch4t/pages/adduser.dart';
 import 'package:p3pch4t/pages/chatpage.dart';
+import 'package:p3pch4t/pages/groupsmanager.dart';
 import 'package:p3pch4t/pages/settings.dart';
 import 'package:p3pch4t/pages/userinfosettings.dart';
 import 'package:p3pch4t/pages/widgets/versionwidget.dart';
@@ -39,7 +40,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Future<bool> _eventCallback(P3p p3p, Event evt) async {
+  Future<bool> _eventCallback(P3p p3p, Event evt, UserInfo ui) async {
     if (evt.eventType != EventType.introduce) return false;
     await loadUsers();
     return false;
@@ -69,8 +70,33 @@ class _HomePageState extends State<HomePage> {
               );
             },
             icon: const Icon(Icons.settings),
-          )
+          ),
         ],
+      ),
+      drawer: Drawer(
+        child: Column(
+          children: [
+            Container(
+              width: double.maxFinite,
+              height: 190,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+            ListTile(
+              title: const Text('Groups'),
+              leading: const Icon(Icons.people),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const GroupsManager(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
       body: Column(
         children: [

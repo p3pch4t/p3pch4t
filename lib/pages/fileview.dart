@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +52,9 @@ class _FileViewState extends State<FileView> {
               child: OutlinedButton(
                 child: const Text('open (may not work)'),
                 onPressed: () async {
-                  await Permission.manageExternalStorage.request().isGranted;
+                  if (Platform.isAndroid) {
+                    await Permission.manageExternalStorage.request().isGranted;
+                  }
                   final result = await OpenFile.open(file.localPath);
                   if (kDebugMode) {
                     print(result.message);

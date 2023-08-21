@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:p3pch4t/helpers.dart';
 import 'package:p3pch4t/pages/home.dart';
 import 'package:p3pch4t/service.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LandingPage extends StatefulWidget {
@@ -58,6 +59,10 @@ class _LandingPageState extends State<LandingPage> {
                     await Future.delayed(const Duration(seconds: 1));
                     exit(1);
                   }
+                  if (Platform.isAndroid) {
+                    await Permission.notification.request();
+                  }
+                  await initializeService();
                   await Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
                       builder: (context) => const HomePage(),
@@ -65,7 +70,7 @@ class _LandingPageState extends State<LandingPage> {
                   );
                 },
                 child: const Text('Register'),
-              )
+              ),
             ],
           ),
         ],

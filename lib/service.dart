@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
@@ -10,6 +11,7 @@ import 'package:p3pch4t/main.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ssmdc/ssmdc.dart';
 
 const notificationChannelId = 'p3pch4t_service';
 const notificationId = 777;
@@ -34,6 +36,14 @@ Future<void> initializeService() async {
   // If you happen to have some issues with this part of code
   // then simply open an issue and I'll hopefully revisit this
   // issue sooner.
+
+  if (!Platform.isAndroid && !Platform.isIOS) {
+    print(
+      'NOTE: FlutterBackgroundService is not supported on oses other that '
+      'Android and iOS',
+    );
+    return;
+  }
 
   final service = FlutterBackgroundService();
   await flutterLocalNotificationsPlugin
@@ -84,7 +94,7 @@ Future<void> onStart(ServiceInstance service) async {
     'P3pch4t is running in the background',
   );
 
-  print('called onStart:');
+  print('onStart(): loop endered');
   int? lastId = -1;
   while (true) {
     await Future.delayed(const Duration(seconds: 15));
@@ -163,6 +173,8 @@ Future<void> updateNotification(
   }
 }
 
+final ssmdcInstances = <P3pSSMDC>[];
+
 Future<void> startP3p() async {
   print('startP3p: starting P3pch4t');
   final appDocumentsDir = await getApplicationDocumentsDirectory();
@@ -175,4 +187,11 @@ Future<void> startP3p() async {
       dbFolder: p.join(appDocumentsDir.path, 'p3pch4t-dbdrift'),
     ),
   );
+
+  final groups = prefs.getStringList('groups') ?? [];
+  for (final group in groups) {
+    ssmdcInstances.add(
+      await P3pSSMDC.createGroup('${p3p!.fileStorePath}/ssmdc-$group'),
+    );
+  }
 }

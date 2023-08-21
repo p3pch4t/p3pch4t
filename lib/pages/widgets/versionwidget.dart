@@ -28,7 +28,12 @@ class _VersionWidgetState extends State<VersionWidget> {
   Future<void> loadVersion() async {
     if (kDebugMode) {
       setState(() {
-        infoString = 'Good luck friend';
+        infoString = 'Debug mode detected';
+        extraInfo = 'You are running a debug build, and you probably know the '
+            'consequences - namely more logging, bigger app size, higher app '
+            'requirements - generally all the things that you would prefer to '
+            'avoid when using the app - so once you finish working on the app '
+            'please, use the official build.';
       });
       return;
     }
@@ -53,7 +58,8 @@ class _VersionWidgetState extends State<VersionWidget> {
 
     try {
       final version = await http.read(
-          Uri.parse('https://p3p.mrcyjanek.net/archive/latest/version.txt'),);
+        Uri.parse('https://p3p.mrcyjanek.net/archive/latest/version.txt'),
+      );
       if (version == P3PCH4T_VERSION) {
         return; // oki - we are on correct version
       }
