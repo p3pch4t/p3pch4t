@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:p3p/p3p.dart';
 import 'package:p3pch4t/main.dart';
 import 'package:p3pch4t/pages/filemanager.dart';
+import 'package:p3pch4t/pages/widgets/richtext.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({required this.userInfo, super.key});
@@ -85,22 +86,27 @@ class _ChatPageState extends State<ChatPage> {
               reverse: true,
               itemCount: rmsgs.length,
               itemBuilder: (context, index) {
-                return switch (rmsgs[index].type) {
-                  MessageType.text => ListTile(
-                      title: SizedBox(
+                return Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: switch (rmsgs[index].type) {
+                    MessageType.text => SizedBox(
                         width: double.maxFinite,
-                        child: Text(
-                          rmsgs[index].text,
+                        child: RichTextView(
+                          text: rmsgs[index].text,
                           textAlign: rmsgs[index].incoming
                               ? TextAlign.start
                               : TextAlign.end,
                         ),
                       ),
-                      // subtitle: kDebugMode ? Text(rmsgs[index].debug()) : null,
-                    ),
-                  MessageType.service => Center(child: Text(rmsgs[index].text)),
-                  _ => const Text('Unsupported message...'),
-                };
+                    MessageType.service => Center(
+                        child: RichTextView(
+                          text: rmsgs[index].text,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    _ => const Text('Unsupported message...'),
+                  },
+                );
               },
               shrinkWrap: true,
             ),

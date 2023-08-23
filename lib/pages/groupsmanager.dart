@@ -33,8 +33,11 @@ class _GroupsManagerState extends State<GroupsManager> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final uuid = const Uuid().v4();
-          final ssmdc =
-              await P3pSSMDC.createGroup('${p3p!.fileStorePath}/ssmdc-$uuid');
+          final ssmdc = await P3pSSMDC.createGroup(
+            '${p3p!.fileStorePath}/ssmdc-$uuid',
+            scheduleTasks: true,
+            listen: true,
+          );
           ssmdcInstances.add(ssmdc);
           final prefs = await SharedPreferences.getInstance();
           final groups = prefs.getStringList('groups') ?? [];

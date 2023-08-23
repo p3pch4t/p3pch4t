@@ -35,7 +35,13 @@ class _LandingPageState extends State<LandingPage> {
           Row(
             children: [
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const LoginPage(),
+                    ),
+                  );
+                },
                 child: const Text('Restore'),
               ),
               const Spacer(),

@@ -25,7 +25,7 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
   importance: Importance.low,
 );
 Future<void> initializeService() async {
-  await startP3p(); // yes, we do start two instances...
+  // yes, we do start two instances...
   // and while this may not be the best way to do it, we need
   // to somehow communicate between two isolates
   // I have an idea to simply create a p3p mini library that
@@ -38,11 +38,14 @@ Future<void> initializeService() async {
   // issue sooner.
 
   if (!Platform.isAndroid && !Platform.isIOS) {
+    await startP3p(scheduleTasks: true, listen: true);
     print(
       'NOTE: FlutterBackgroundService is not supported on oses other that '
       'Android and iOS',
     );
     return;
+  } else {
+    await startP3p(scheduleTasks: false, listen: false);
   }
 
   final service = FlutterBackgroundService();
@@ -76,7 +79,7 @@ Future<void> onStart(ServiceInstance service) async {
   if (p3p == null) {
     print("NOTE: it looks like p3pch4t is not loaded, let's start it");
     await updateNotification(service, 'Starting', 'p3pch4t is starting');
-    await startP3p();
+    await startP3p(scheduleTasks: true, listen: true);
     print('p3p started...');
   }
   if (p3p == null) {
@@ -175,7 +178,10 @@ Future<void> updateNotification(
 
 final ssmdcInstances = <P3pSSMDC>[];
 
-Future<void> startP3p() async {
+Future<void> startP3p({
+  required bool scheduleTasks,
+  required bool listen,
+}) async {
   print('startP3p: starting P3pch4t');
   final appDocumentsDir = await getApplicationDocumentsDirectory();
   final prefs = await SharedPreferences.getInstance();
@@ -185,13 +191,20 @@ Future<void> startP3p() async {
     prefs.getString('priv_passpharse') ?? 'no_passpharse',
     db.DatabaseImplDrift(
       dbFolder: p.join(appDocumentsDir.path, 'p3pch4t-dbdrift'),
+      singularFileStore: false,
     ),
+    scheduleTasks: scheduleTasks,
+    listen: listen,
   );
 
   final groups = prefs.getStringList('groups') ?? [];
   for (final group in groups) {
     ssmdcInstances.add(
-      await P3pSSMDC.createGroup('${p3p!.fileStorePath}/ssmdc-$group'),
+      await P3pSSMDC.createGroup(
+        '${p3p!.fileStorePath}/ssmdc-$group',
+        scheduleTasks: scheduleTasks,
+        listen: true,
+      ),
     );
   }
 }

@@ -144,7 +144,7 @@ window.webxdc = {
           data,
           headers: {
             'Content-Type': lookupMimeType(path) ?? 'application/octet-stream',
-            'Content-Security-Policy': csp
+            'Content-Security-Policy': csp,
           },
         );
       }
