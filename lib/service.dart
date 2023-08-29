@@ -40,7 +40,7 @@ Future<void> initializeService() async {
   if (!Platform.isAndroid && !Platform.isIOS) {
     await startP3p(scheduleTasks: true, listen: true);
     print(
-      'NOTE: FlutterBackgroundService is not supported on oses other that '
+      'NOTE: FlutterBackgroundService is not supported on oses other than '
       'Android and iOS',
     );
     return;

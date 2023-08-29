@@ -93,6 +93,7 @@ class _ChatPageState extends State<ChatPage> {
                         width: double.maxFinite,
                         child: RichTextView(
                           text: rmsgs[index].text,
+                          dateReceived: rmsgs[index].dateReceived,
                           textAlign: rmsgs[index].incoming
                               ? TextAlign.start
                               : TextAlign.end,
@@ -101,6 +102,7 @@ class _ChatPageState extends State<ChatPage> {
                     MessageType.service => Center(
                         child: RichTextView(
                           text: rmsgs[index].text,
+                          dateReceived: rmsgs[index].dateReceived,
                           textAlign: TextAlign.center,
                         ),
                       ),

@@ -6,10 +6,12 @@ class RichTextView extends StatelessWidget {
   const RichTextView({
     required this.text,
     required this.textAlign,
+    required this.dateReceived,
     super.key,
   });
   final String text;
   final TextAlign textAlign;
+  final DateTime dateReceived;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +25,7 @@ class RichTextView extends StatelessWidget {
         selectable: true,
         imageBuilder: (uri, title, alt) =>
             const Text('image tags are not supported'),
-        data: text,
+        data: '`${getDateText(dateReceived)}`: $text',
         extensionSet: md.ExtensionSet(
           md.ExtensionSet.gitHubFlavored.blockSyntaxes,
           <md.InlineSyntax>[
@@ -34,4 +36,13 @@ class RichTextView extends StatelessWidget {
       ),
     );
   }
+}
+
+String getDateText(DateTime dateReceived) {
+  final yesterday = DateTime.now().subtract(const Duration(days: 1));
+  final tomorrow = DateTime.now().add(const Duration(days: 1));
+  if (dateReceived.isBefore(tomorrow) && dateReceived.isAfter(yesterday)) {
+    return '${dateReceived.hour.toString().padLeft(2, '0')}:${dateReceived.minute.toString().padLeft(2, '0')}';
+  }
+  return dateReceived.toIso8601String();
 }
