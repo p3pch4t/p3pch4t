@@ -225,8 +225,9 @@ window.webxdc.setUpdateListenerList[${jBody["listId"] - 1}]({
         localFileSha512sum: null,
         sizeBytes: 0,
         fileInChatPath: desiredPath,
-      );
-      updateElm.shouldFetch = true;
+        uuid: null,
+      )
+        ..shouldFetch = true;
       await updateElm.updateContent(p3p!);
 
       return updateElm;

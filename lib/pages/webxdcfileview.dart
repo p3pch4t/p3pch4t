@@ -177,6 +177,7 @@ window.webxdc = {
     }
     return Scaffold(
       appBar: AppBar(),
+      body: const Text('Oh no'),
     );
   }
 }

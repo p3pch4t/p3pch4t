@@ -185,12 +185,13 @@ Future<void> startP3p({
   print('startP3p: starting P3pch4t');
   final appDocumentsDir = await getApplicationDocumentsDirectory();
   final prefs = await SharedPreferences.getInstance();
+  final filestore = p.join(appDocumentsDir.path, 'p3pch4t');
   p3p = await P3p.createSession(
-    p.join(appDocumentsDir.path, 'p3pch4t'),
+    filestore,
     prefs.getString('priv_key')!,
     prefs.getString('priv_passpharse') ?? 'no_passpharse',
     db.DatabaseImplDrift(
-      dbFolder: p.join(appDocumentsDir.path, 'p3pch4t-dbdrift'),
+      dbFolder: p.join(filestore, 'dbdrift'),
       singularFileStore: false,
     ),
     scheduleTasks: scheduleTasks,

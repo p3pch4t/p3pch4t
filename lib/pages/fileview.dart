@@ -96,7 +96,7 @@ class _FileViewState extends State<FileView> {
       print('saveElement:');
     }
     file.path = pathCtrl.text;
-    await file.save(p3p!);
+    await file.saveAndBroadcast(p3p!);
     setState(() {});
   }
 }

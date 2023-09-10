@@ -42,7 +42,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 onPressed: () async {
                   final si = await p3p!.getSelfInfo();
                   si.name = nameCtrl.text;
-                  await si.save(p3p!);
+                  await p3p!.db.save(si);
                   await p3p!.db.getAllUserInfo().then((value) {
                     for (final element in value) {
                       element.lastIntroduce = DateTime(1998);

@@ -59,25 +59,13 @@ class _ChatPageState extends State<ChatPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(userInfo.name ?? 'name unknown'),
-        actions: [
-          IconButton(
-            onPressed: () async {
-              await Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) {
-                    return FileManager(
-                      fileStore: userInfo.fileStore,
-                      roomFingerprint: userInfo.publicKey.fingerprint,
-                      chatroom: userInfo,
-                    );
-                  },
-                ),
-              );
-              await loadMessages();
-            },
-            icon: const Icon(Icons.folder),
-          ),
-        ],
+      ),
+      endDrawer: Drawer(
+        child: FileManager(
+          fileStore: userInfo.fileStore,
+          roomFingerprint: userInfo.publicKey.fingerprint,
+          chatroom: userInfo,
+        ),
       ),
       body: Column(
         children: [

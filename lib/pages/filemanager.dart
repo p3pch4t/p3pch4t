@@ -69,6 +69,7 @@ class _FileManagerState extends State<FileManager> {
         .toList();
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(path),
       ),
       body: ListView.builder(
@@ -100,6 +101,7 @@ class _FileManagerState extends State<FileManager> {
               ),
               sizeBytes: await File(file.path!).length(),
               fileInChatPath: '/Unsort/$dateSlug/${file.name}',
+              uuid: null,
             );
             await loadFiles();
           }
