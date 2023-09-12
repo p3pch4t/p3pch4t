@@ -1,3 +1,5 @@
+// ignore_for_file: public_member_api_docs
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -76,11 +78,12 @@ class _WebxdcFileViewAndroidState extends State<WebxdcFileViewAndroid> {
         // I/flutter (14004):     "descr": "localuser scored 25 in Tower Builder!"
         // I/flutter (14004): }
         if (kDebugMode) print('p3p_native_sendUpdate:');
-        final jBody = json.decode(p0.message);
-        if (jBody['update']['info'] != null && jBody['update']['info'] != '') {
+        final jBody = json.decode(p0.message) as Map<String, dynamic>;
+        final jBodyUpdate = jBody['update'] as Map<String, dynamic>;
+        if (jBodyUpdate['info'] != null && jBodyUpdate['info'] != '') {
           await p3p!.sendMessage(
             widget.chatroom,
-            jBody['update']['info'].toString(),
+            jBodyUpdate['info'].toString(),
             type: MessageType.service,
           );
         }
@@ -92,7 +95,7 @@ class _WebxdcFileViewAndroidState extends State<WebxdcFileViewAndroid> {
         }
 
         await updateElm.file.writeAsString(
-          "\n${json.encode(jBody["update"]["payload"])}",
+          "\n${json.encode(jBodyUpdate["payload"])}",
           mode: FileMode.append,
           flush: true,
         );
@@ -103,7 +106,7 @@ class _WebxdcFileViewAndroidState extends State<WebxdcFileViewAndroid> {
         final jsPayload = '''
 for (let i = 0; i < window.webxdc.setUpdateListenerList.length; i++) {
   window.webxdc.setUpdateListenerList[i]({
-    "payload": ${json.encode(jBody["update"]["payload"])},
+    "payload": ${json.encode(jBodyUpdate["payload"])},
     "serial": ${lines.length},
     "max_serial": ${lines.length},
     "info": null,
@@ -129,8 +132,8 @@ for (let i = 0; i < window.webxdc.setUpdateListenerList.length; i++) {
         //   "listId": listId,
         //   "serial": serial,
         // }
-        final jBody = json.decode(p0.message);
-        assert(jBody['listId'] is int);
+        final jBody = json.decode(p0.message) as Map<String, dynamic>;
+        assert(jBody['listId'] is int, 'ListID is not a string');
         if (kDebugMode) print('p3p_native_setUpdateListener: ${p0.message}');
         final updateElm = await getUpdateElement();
         if (updateElm == null) {
@@ -144,7 +147,7 @@ for (let i = 0; i < window.webxdc.setUpdateListenerList.length; i++) {
             final jsPayload = '''
 console.log("setUpdateListener: hook id: $i");
 
-window.webxdc.setUpdateListenerList[${jBody["listId"] - 1}]({
+window.webxdc.setUpdateListenerList[${(jBody["listId"] as int) - 1}]({
   "payload": $payload,
   "serial": $i,
   "max_serial": ${lines.length},

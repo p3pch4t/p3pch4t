@@ -1,3 +1,5 @@
+// ignore_for_file: public_member_api_docs
+
 import 'package:flutter/material.dart';
 import 'package:p3p/p3p.dart';
 import 'package:p3pch4t/main.dart';
@@ -47,7 +49,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> loadUsers() async {
-    final value = await p3p!.getUsers();
+    final value = await p3p!.db.getAllUserInfo();
     setState(() {
       users = value;
     });
@@ -64,7 +66,7 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             onPressed: () {
               Navigator.of(context).push(
-                MaterialPageRoute(
+                MaterialPageRoute<void>(
                   builder: (context) => const SettingsPage(),
                 ),
               );
@@ -89,7 +91,7 @@ class _HomePageState extends State<HomePage> {
               onTap: () {
                 Navigator.of(context).pop();
                 Navigator.of(context).push(
-                  MaterialPageRoute(
+                  MaterialPageRoute<void>(
                     builder: (context) => const GroupsManager(),
                   ),
                 );
@@ -113,7 +115,7 @@ class _HomePageState extends State<HomePage> {
                       );
                       if (!mounted) return;
                       await Navigator.of(context).push(
-                        MaterialPageRoute(
+                        MaterialPageRoute<void>(
                           builder: (context) => ChatPage(
                             userInfo: ui!,
                           ),
@@ -127,7 +129,7 @@ class _HomePageState extends State<HomePage> {
                       );
                       if (!mounted) return;
                       await Navigator.of(context).push(
-                        MaterialPageRoute(
+                        MaterialPageRoute<void>(
                           builder: (context) {
                             return UserInfoPage(userInfo: ui!);
                           },
@@ -146,7 +148,7 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await Navigator.of(context).push(
-            MaterialPageRoute(
+            MaterialPageRoute<void>(
               builder: (context) => const AddUserPage(),
             ),
           );

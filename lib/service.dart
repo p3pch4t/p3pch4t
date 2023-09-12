@@ -1,3 +1,5 @@
+// ignore_for_file: public_member_api_docs
+
 import 'dart:io';
 import 'dart:ui';
 
@@ -6,6 +8,7 @@ import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_background_service_android/flutter_background_service_android.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:p3p/p3p.dart';
+// ignore: implementation_imports
 import 'package:p3p/src/database/drift.dart' as db;
 import 'package:p3pch4t/main.dart';
 import 'package:path/path.dart' as p;
@@ -15,6 +18,7 @@ import 'package:ssmdc/ssmdc.dart';
 
 const notificationChannelId = 'p3pch4t_service';
 const notificationId = 777;
+
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
@@ -39,7 +43,7 @@ Future<void> initializeService() async {
 
   if (!Platform.isAndroid && !Platform.isIOS) {
     await startP3p(scheduleTasks: true, listen: true);
-    print(
+    p3p?.print(
       'NOTE: FlutterBackgroundService is not supported on oses other than '
       'Android and iOS',
     );
@@ -55,12 +59,12 @@ Future<void> initializeService() async {
       ?.createNotificationChannel(channel);
   await service.configure(
     androidConfiguration: AndroidConfiguration(
-      // this will be executed when app is in foreground or background in separated isolate
+      // this will be executed when app is in foreground or background in
+      // separated isolate
       onStart: onStart,
       isForegroundMode: true,
-
-      notificationChannelId:
-          notificationChannelId, // this must match with notification channel you created above.
+      // this must match with notification channel that was created above.
+      notificationChannelId: notificationChannelId,
       initialNotificationTitle: 'P3pch4t',
       initialNotificationContent: 'Initializing',
       foregroundServiceNotificationId: notificationId,
@@ -77,19 +81,19 @@ Future<void> initializeService() async {
 Future<void> onStart(ServiceInstance service) async {
   DartPluginRegistrant.ensureInitialized();
   if (p3p == null) {
-    print("NOTE: it looks like p3pch4t is not loaded, let's start it");
+    p3p?.print("NOTE: it looks like p3pch4t is not loaded, let's start it");
     await updateNotification(service, 'Starting', 'p3pch4t is starting');
     await startP3p(scheduleTasks: true, listen: true);
-    print('p3p started...');
+    p3p?.print('p3p started...');
   }
   if (p3p == null) {
-    print('NOTE: p3p failed to start. for reason unknown to us. Sorry.');
+    p3p?.print('NOTE: p3p failed to start. for reason unknown to us. Sorry.');
     await updateNotification(
       service,
       'Failed to start',
       "p3p was unable to initialize. That's all we know",
     );
-    await Future.delayed(const Duration(seconds: 30));
+    await Future<void>.delayed(const Duration(seconds: 30));
   }
   await updateNotification(
     service,
@@ -97,10 +101,10 @@ Future<void> onStart(ServiceInstance service) async {
     'P3pch4t is running in the background',
   );
 
-  print('onStart(): loop endered');
+  p3p?.print('onStart(): loop endered');
   int? lastId = -1;
   while (true) {
-    await Future.delayed(const Duration(seconds: 15));
+    await Future<void>.delayed(const Duration(seconds: 15));
 
     final msg = await p3p!.db.getLastMessage();
     if (msg?.id == lastId) continue;
@@ -182,7 +186,7 @@ Future<void> startP3p({
   required bool scheduleTasks,
   required bool listen,
 }) async {
-  print('startP3p: starting P3pch4t');
+  p3p?.print('startP3p: starting P3pch4t');
   final appDocumentsDir = await getApplicationDocumentsDirectory();
   final prefs = await SharedPreferences.getInstance();
   final filestore = p.join(appDocumentsDir.path, 'p3pch4t');

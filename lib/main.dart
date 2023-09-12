@@ -1,3 +1,5 @@
+// ignore_for_file: public_member_api_docs
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -9,6 +11,7 @@ import 'package:p3pch4t/service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// The globaly-used p3p object for the chat app.
 P3p? p3p;
 
 void main() async {

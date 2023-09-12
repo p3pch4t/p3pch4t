@@ -1,3 +1,5 @@
+// ignore_for_file: public_member_api_docs
+
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -91,8 +93,9 @@ class _FileManagerState extends State<FileManager> {
           if (result.files.isEmpty) return;
           for (final file in result.files) {
             final today = DateTime.now();
-            final dateSlug =
-                "${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
+            final dateSlug = '${today.year}-'
+                '${today.month.toString().padLeft(2, '0')}-'
+                '${today.day.toString().padLeft(2, '0')}';
             await fileStore.putFileStoreElement(
               p3p!,
               localFile: File(file.path!),
@@ -125,7 +128,7 @@ class _FileManagerState extends State<FileManager> {
             Text('${(file.sizeBytes / 1024 / 1024).toStringAsFixed(4)} MiB'),
         onLongPress: () async {
           await Navigator.of(context).push(
-            MaterialPageRoute(
+            MaterialPageRoute<void>(
               builder: (context) => FileView(
                 file: file,
                 roomFingerprint: roomFingerprint,
@@ -136,7 +139,7 @@ class _FileManagerState extends State<FileManager> {
         },
         onTap: () async {
           await Navigator.of(context).push(
-            MaterialPageRoute(
+            MaterialPageRoute<void>(
               builder: (context) {
                 return switch (file.path.split('.').reversed.first) {
                   'xdc' => WebxdcFileView(

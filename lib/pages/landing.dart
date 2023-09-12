@@ -1,3 +1,5 @@
+// ignore_for_file: public_member_api_docs
+
 import 'dart:io';
 
 import 'package:dart_pg/dart_pg.dart';
@@ -37,7 +39,7 @@ class _LandingPageState extends State<LandingPage> {
               TextButton(
                 onPressed: () {
                   Navigator.of(context).push(
-                    MaterialPageRoute(
+                    MaterialPageRoute<void>(
                       builder: (context) => const LoginPage(),
                     ),
                   );
@@ -62,15 +64,18 @@ class _LandingPageState extends State<LandingPage> {
                     isLoading = false;
                   });
                   if (!mounted) {
-                    await Future.delayed(const Duration(seconds: 1));
+                    await Future<void>.delayed(const Duration(seconds: 1));
                     exit(1);
                   }
                   if (Platform.isAndroid) {
                     await Permission.notification.request();
                   }
                   await initializeService();
+                  if (mounted) return;
+                  // it is used safely here.
+                  // ignore: use_build_context_synchronously
                   await Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
+                    MaterialPageRoute<void>(
                       builder: (context) => const HomePage(),
                     ),
                   );
@@ -148,12 +153,12 @@ class _LoginPageState extends State<LoginPage> {
                       });
                       await initializeService();
                       if (!mounted) {
-                        await Future.delayed(const Duration(seconds: 1));
+                        await Future<void>.delayed(const Duration(seconds: 1));
                         exit(1);
                       }
 
                       await Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
+                        MaterialPageRoute<void>(
                           builder: (context) => const HomePage(),
                         ),
                       );

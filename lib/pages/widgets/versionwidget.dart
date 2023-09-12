@@ -1,3 +1,5 @@
+// ignore_for_file: public_member_api_docs
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -67,9 +69,10 @@ class _VersionWidgetState extends State<VersionWidget> {
         () {
           infoString = 'New version if available!';
           extraInfo =
-              'New version is available: **$version**. You are currently running on: $P3PCH4T_VERSION\n'
-              'It is important to use latest version to ensure network stability.\n'
-              '(Especially during beta).';
+              'New version is available: **$version**. You are currently '
+              'running on: $P3PCH4T_VERSION\nIt is important to use latest '
+              'version to ensure network stability.\n (Especially during beta) '
+              '.';
         },
       );
     } catch (e) {
@@ -87,8 +90,9 @@ class _VersionWidgetState extends State<VersionWidget> {
   }
 
   void _showExtraDialog() {
-    assert(infoString != null);
-    assert(extraInfo != null);
+    assert(infoString != null, 'infoString is null!');
+    assert(extraInfo != null, 'extraInfo is null');
+    // ignore: inference_failure_on_function_invocation
     showDialog(
       context: context,
       builder: (context) {

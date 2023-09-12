@@ -1,3 +1,5 @@
+// ignore_for_file: public_member_api_docs
+
 import 'dart:io';
 import 'dart:math';
 
@@ -12,7 +14,7 @@ import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 
 const csp =
-    "default-src 'self'; style-src 'self' 'unsafe-inline' blob: ; font-src 'self' data: blob: ; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: ; connect-src 'self' data: blob: ; img-src 'self' data: blob: ; media-src 'self' data: blob: ;webrtc 'block' ; ";
+    "default-src 'self'; style-src 'self' 'unsafe-inline' blob: ; font-src 'self' data: blob: ; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: ; connect-src 'self' data: blob: ; img-src 'self' data: blob: ; media-src 'self' data: blob: ;webrtc 'block' ; "; // ignore: lines_longer_than_80_chars
 
 class WebxdcFileView extends StatefulWidget {
   const WebxdcFileView({
@@ -44,7 +46,7 @@ class _WebxdcFileViewState extends State<WebxdcFileView> {
     try {
       startLocalServer();
     } catch (e) {
-      print('[webxdc] startLocalServer: $e');
+      p3p?.print('[webxdc] startLocalServer: $e');
     }
     super.initState();
   }
@@ -54,7 +56,7 @@ class _WebxdcFileViewState extends State<WebxdcFileView> {
     try {
       server.close();
     } catch (e) {
-      print('[webxdc] server.close(): $e');
+      p3p?.print('[webxdc] server.close(): $e');
     }
 
     super.dispose();
@@ -177,7 +179,7 @@ window.webxdc = {
     }
     return Scaffold(
       appBar: AppBar(),
-      body: const Text('Oh no'),
+      body: const Text('WebXDC is not yet supported on this platform'),
     );
   }
 }

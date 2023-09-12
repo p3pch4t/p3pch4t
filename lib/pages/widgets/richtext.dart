@@ -1,3 +1,5 @@
+// ignore_for_file: public_member_api_docs
+
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:markdown/markdown.dart' as md;
@@ -42,7 +44,8 @@ String getDateText(DateTime dateReceived) {
   final yesterday = DateTime.now().subtract(const Duration(days: 1));
   final tomorrow = DateTime.now().add(const Duration(days: 1));
   if (dateReceived.isBefore(tomorrow) && dateReceived.isAfter(yesterday)) {
-    return '${dateReceived.hour.toString().padLeft(2, '0')}:${dateReceived.minute.toString().padLeft(2, '0')}';
+    return '${dateReceived.hour.toString().padLeft(2, '0')}:'
+        '${dateReceived.minute.toString().padLeft(2, '0')}';
   }
   return dateReceived.toIso8601String();
 }
