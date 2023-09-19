@@ -187,7 +187,16 @@ Future<void> startP3p({
   required bool listen,
 }) async {
   p3p?.print('startP3p: starting P3pch4t');
-  final appDocumentsDir = await getApplicationDocumentsDirectory();
+
+  var appDocumentsDir = Directory(
+    Platform.environment['HOME'] ?? '.p3p-data',
+  );
+  try {
+    appDocumentsDir = await getApplicationDocumentsDirectory();
+  } catch (e) {
+    // We can simply ignore this error
+  }
+
   final prefs = await SharedPreferences.getInstance();
   final filestore = p.join(appDocumentsDir.path, 'p3pch4t');
   p3p = await P3p.createSession(

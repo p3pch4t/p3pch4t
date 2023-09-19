@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:p3pch4t/main.dart';
+import 'package:flutter_i2p/flutter_i2p.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -39,6 +40,16 @@ class _SettingsPageState extends State<SettingsPage> {
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                 ),
+              ),
+              OutlinedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const I2pConfigPage(),
+                    ),
+                  );
+                },
+                child: const Text('I2p settings'),
               ),
               OutlinedButton(
                 onPressed: () async {
