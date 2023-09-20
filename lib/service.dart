@@ -1,9 +1,12 @@
 // ignore_for_file: public_member_api_docs
 
+import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:dart_i2p/dart_i2p.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_background_service_android/flutter_background_service_android.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -11,6 +14,7 @@ import 'package:p3p/p3p.dart';
 // ignore: implementation_imports
 import 'package:p3p/src/database/drift.dart' as db;
 import 'package:p3pch4t/main.dart';
+import 'package:p3pch4t/platform_interface.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -79,9 +83,12 @@ Future<void> initializeService() async {
 }
 
 Future<void> onStart(ServiceInstance service) async {
-  DartPluginRegistrant.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
+  // DartPluginRegistrant.ensureInitialized();
   if (p3p == null) {
-    p3p?.print("NOTE: it looks like p3pch4t is not loaded, let's start it");
+    if (kDebugMode) {
+      print("NOTE: it looks like p3pch4t is not loaded, let's start it");
+    }
     await updateNotification(service, 'Starting', 'p3pch4t is starting');
     await startP3p(scheduleTasks: true, listen: true);
     p3p?.print('p3p started...');
@@ -181,12 +188,19 @@ Future<void> updateNotification(
 }
 
 final ssmdcInstances = <P3pSSMDC>[];
+I2p? i2p;
 
+@pragma('vm:entrypoint')
 Future<void> startP3p({
   required bool scheduleTasks,
   required bool listen,
 }) async {
-  p3p?.print('startP3p: starting P3pch4t');
+  if (kDebugMode) {
+    print('startP3p: starting P3pch4t {\n'
+        '    scheduleTasks: $scheduleTasks,\n'
+        '    listen: $listen\n'
+        '}');
+  }
 
   var appDocumentsDir = Directory(
     Platform.environment['HOME'] ?? '.p3p-data',
@@ -199,6 +213,58 @@ Future<void> startP3p({
 
   final prefs = await SharedPreferences.getInstance();
   final filestore = p.join(appDocumentsDir.path, 'p3pch4t');
+  if (listen) {
+    if (kDebugMode) print('starting i2pd');
+    i2p = I2p(
+      storePathString: p.join(filestore, 'i2pd-data'),
+      tunnels: [
+        I2pdHttpTunnel(
+          name: 'p3pch4tmain',
+          host: '127.0.0.1',
+          port: 3893,
+          inport: 3893,
+          keys: 'p3pch4tmain.dat',
+        ),
+      ],
+      i2pdConf: I2pdConf(
+        loglevel: 'warn',
+        logfile: p.join(filestore, 'i2pd-data', 'log.txt'),
+        log: 'file',
+        port: I2pdConf.getPort(),
+        ntcp2: I2pdNtcp2Conf(),
+        ssu2: I2pdSsu2Conf(),
+        http: I2pdHttpConf(auth: false),
+        httpproxy: I2pdHttpproxyConf(),
+        socksproxy: I2pdSocksproxyConf(),
+        sam: I2pdSamConf(),
+        bob: I2pdBobConf(),
+        i2cp: I2pdI2cpConf(),
+        i2pcontrol: I2pdI2pcontrolConf(),
+        precomputation: I2pdPrecomputationConf(),
+        upnp: I2pdUpnpConf(),
+        meshnets: I2pdMeshnetsConf(),
+        reseed: I2pdReseedConf(),
+        addressbook: I2pdAddressbookConf(),
+        limits: I2pdLimitsConf(),
+        trust: I2pdTrustConf(),
+        exploratory: I2pdExploratoryConf(),
+        persist: I2pdPersistConf(),
+        cpuext: I2pdCpuextConf(),
+      ),
+      binPath: (await getAndroidNativeLibraryDirectory()).path,
+      libSoHack: Platform.isAndroid,
+    );
+    unawaited(
+      (() async {
+        if (kDebugMode) print('STARTING I2P');
+        final ec = await i2p?.run();
+        if (kDebugMode) print('I2P exited naturally: $ec');
+      })(),
+    );
+  }
+
+  final eepsite = await i2p?.domainInfo('p3pch4tmain.dat');
+  if (kDebugMode) print('P3p.createSession - (eepsite: $eepsite)');
   p3p = await P3p.createSession(
     filestore,
     prefs.getString('priv_key')!,
@@ -209,6 +275,11 @@ Future<void> startP3p({
     ),
     scheduleTasks: scheduleTasks,
     listen: listen,
+    reachableI2p: eepsite == null
+        ? null
+        : ReachableI2p(
+            eepsiteAddress: eepsite,
+          ),
   );
 
   final groups = prefs.getStringList('groups') ?? [];

@@ -7,6 +7,7 @@ import 'package:p3p/p3p.dart';
 import 'package:p3pch4t/consts.dart';
 import 'package:p3pch4t/pages/home.dart';
 import 'package:p3pch4t/pages/landing.dart';
+import 'package:p3pch4t/platform_interface.dart';
 import 'package:p3pch4t/service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,6 +17,7 @@ P3p? p3p;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await getAndroidNativeLibraryDirectory(forceRefresh: true);
   final prefs = await SharedPreferences.getInstance();
   if (prefs.getString('priv_key') == null) {
     runApp(const MyApp(landing: true));
@@ -39,7 +41,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      darkTheme: ThemeData.dark(useMaterial3: true),
+      darkTheme: ThemeData.dark(
+        useMaterial3: true,
+      ),
       home: landing ? const LandingPage() : const HomePage(),
     );
   }
