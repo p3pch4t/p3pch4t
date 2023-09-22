@@ -14,7 +14,20 @@ class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomePage> createState() =>
+      // ignore: no_logic_in_create_state
+      p3p == null ? _HomePageErrorState() : _HomePageState();
+}
+
+class _HomePageErrorState extends State<HomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('No p3p'),
+      ),
+    );
+  }
 }
 
 class _HomePageState extends State<HomePage> {

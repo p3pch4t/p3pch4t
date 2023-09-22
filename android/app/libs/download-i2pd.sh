@@ -15,9 +15,11 @@ for arch in arm64-v8a armeabi-v7a x86 x86_64; do
     mkdir -p "$BUILD_DIR/lib/$arch"
     # loop to move all the binaries that we want
     for binary in i2pd keyinfo; do
-        cp "$CLONE_DIR/android/$arch/$binary" "$BUILD_DIR/lib/$arch/lib$binary.so"
+        cp "$CLONE_DIR/android/$arch/$binary" "$BUILD_DIR/lib/$arch/lib$binary.so" && \
+        upx -d "$BUILD_DIR/lib/$arch/lib$binary.so" || \
+        true
     done
 done
 (cd $BUILD_DIR; zip i2plib.jar lib -r)
 mv $BUILD_DIR/i2plib.jar .
-rm -rf $BUILD_DIR $CLONE_DIR
+# rm -rf $BUILD_DIR $CLONE_DIR

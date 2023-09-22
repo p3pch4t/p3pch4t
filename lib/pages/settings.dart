@@ -3,8 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_i2p/flutter_i2p.dart';
 import 'package:p3pch4t/main.dart';
-import 'package:p3pch4t/platform_interface.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:p3pch4t/service.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -18,7 +17,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   void initState() {
-    getAndroidNativeLibraryDirectory().then(print);
     p3p!.getSelfInfo().then((value) {
       setState(() {
         nameCtrl.text = value.name ?? 'Unknown';
@@ -45,13 +43,16 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               OutlinedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (context) => const I2pConfigPage(),
-                    ),
-                  );
-                },
+                onPressed: i2p == null
+                    ? null
+                    : () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (context) =>
+                                I2pConfigPage(i2pdConf: i2p!.i2pdConf),
+                          ),
+                        );
+                      },
                 child: const Text('I2p settings'),
               ),
               OutlinedButton(

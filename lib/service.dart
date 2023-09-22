@@ -2,7 +2,6 @@
 
 import 'dart:async';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:dart_i2p/dart_i2p.dart';
 import 'package:flutter/foundation.dart';
@@ -94,13 +93,15 @@ Future<void> onStart(ServiceInstance service) async {
     p3p?.print('p3p started...');
   }
   if (p3p == null) {
-    p3p?.print('NOTE: p3p failed to start. for reason unknown to us. Sorry.');
+    if (kDebugMode) {
+      print('NOTE: p3p failed to start. for reason unknown to us. Sorry.');
+    }
     await updateNotification(
       service,
       'Failed to start',
       "p3p was unable to initialize. That's all we know",
     );
-    await Future<void>.delayed(const Duration(seconds: 30));
+    return;
   }
   await updateNotification(
     service,
@@ -113,7 +114,7 @@ Future<void> onStart(ServiceInstance service) async {
   while (true) {
     await Future<void>.delayed(const Duration(seconds: 15));
 
-    final msg = await p3p!.db.getLastMessage();
+    final msg = await p3p?.db.getLastMessage();
     if (msg?.id == lastId) continue;
     lastId = msg?.id;
     if (msg == null) continue;
@@ -213,47 +214,48 @@ Future<void> startP3p({
 
   final prefs = await SharedPreferences.getInstance();
   final filestore = p.join(appDocumentsDir.path, 'p3pch4t');
-  if (listen) {
-    if (kDebugMode) print('starting i2pd');
-    i2p = I2p(
-      storePathString: p.join(filestore, 'i2pd-data'),
-      tunnels: [
-        I2pdHttpTunnel(
-          name: 'p3pch4tmain',
-          host: '127.0.0.1',
-          port: 3893,
-          inport: 3893,
-          keys: 'p3pch4tmain.dat',
-        ),
-      ],
-      i2pdConf: I2pdConf(
-        loglevel: 'warn',
-        logfile: p.join(filestore, 'i2pd-data', 'log.txt'),
-        log: 'file',
-        port: I2pdConf.getPort(),
-        ntcp2: I2pdNtcp2Conf(),
-        ssu2: I2pdSsu2Conf(),
-        http: I2pdHttpConf(auth: false),
-        httpproxy: I2pdHttpproxyConf(),
-        socksproxy: I2pdSocksproxyConf(),
-        sam: I2pdSamConf(),
-        bob: I2pdBobConf(),
-        i2cp: I2pdI2cpConf(),
-        i2pcontrol: I2pdI2pcontrolConf(),
-        precomputation: I2pdPrecomputationConf(),
-        upnp: I2pdUpnpConf(),
-        meshnets: I2pdMeshnetsConf(),
-        reseed: I2pdReseedConf(),
-        addressbook: I2pdAddressbookConf(),
-        limits: I2pdLimitsConf(),
-        trust: I2pdTrustConf(),
-        exploratory: I2pdExploratoryConf(),
-        persist: I2pdPersistConf(),
-        cpuext: I2pdCpuextConf(),
+  if (kDebugMode) print('starting i2pd');
+  i2p = I2p(
+    storePathString: p.join(filestore, 'i2pd-data'),
+    tunnels: [
+      I2pdHttpTunnel(
+        name: 'p3pch4tmain',
+        host: '127.0.0.1',
+        port: 3893,
+        inport: 3893,
+        keys: 'p3pch4tmain.dat',
       ),
-      binPath: (await getAndroidNativeLibraryDirectory()).path,
-      libSoHack: Platform.isAndroid,
-    );
+    ],
+    i2pdConf: I2pdConf(
+      pidfile: p.join(filestore, 'i2pd-data', 'i2pddata', 'i2pd.pid'),
+      loglevel: 'warn',
+      logfile: p.join(filestore, 'i2pd-data', 'log.txt'),
+      log: 'file',
+      port: I2pdConf.getPort(),
+      ntcp2: I2pdNtcp2Conf(),
+      ssu2: I2pdSsu2Conf(),
+      http: I2pdHttpConf(auth: false),
+      httpproxy: I2pdHttpproxyConf(),
+      socksproxy: I2pdSocksproxyConf(),
+      sam: I2pdSamConf(),
+      bob: I2pdBobConf(),
+      i2cp: I2pdI2cpConf(),
+      i2pcontrol: I2pdI2pcontrolConf(),
+      precomputation: I2pdPrecomputationConf(),
+      upnp: I2pdUpnpConf(),
+      meshnets: I2pdMeshnetsConf(),
+      reseed: I2pdReseedConf(),
+      addressbook: I2pdAddressbookConf(),
+      limits: I2pdLimitsConf(),
+      trust: I2pdTrustConf(),
+      exploratory: I2pdExploratoryConf(),
+      persist: I2pdPersistConf(),
+      cpuext: I2pdCpuextConf(),
+    ),
+    binPath: (await getAndroidNativeLibraryDirectory()).path,
+    libSoHack: Platform.isAndroid,
+  );
+  if (listen) {
     unawaited(
       (() async {
         if (kDebugMode) print('STARTING I2P');
@@ -286,7 +288,7 @@ Future<void> startP3p({
   for (final group in groups) {
     ssmdcInstances.add(
       await P3pSSMDC.createGroup(
-        '${p3p!.fileStorePath}/ssmdc-$group',
+        '${p3p?.fileStorePath}/ssmdc-$group',
         scheduleTasks: scheduleTasks,
         listen: true,
       ),
