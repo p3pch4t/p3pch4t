@@ -14,6 +14,7 @@ import 'package:p3p/p3p.dart';
 import 'package:p3p/src/database/drift.dart' as db;
 import 'package:p3pch4t/main.dart';
 import 'package:p3pch4t/platform_interface.dart';
+import 'package:p3pch4t/switch_platform.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -44,15 +45,17 @@ Future<void> initializeService() async {
   // then simply open an issue and I'll hopefully revisit this
   // issue sooner.
 
-  if (!Platform.isAndroid && !Platform.isIOS) {
-    await startP3p(scheduleTasks: true, listen: true);
-    p3p?.print(
-      'NOTE: FlutterBackgroundService is not supported on oses other than '
-      'Android and iOS',
-    );
-    return;
-  } else {
-    await startP3p(scheduleTasks: false, listen: false);
+  switch (getPlatform()) {
+    case OS.android:
+      await startP3p(scheduleTasks: true, listen: true);
+      p3p?.print(
+        'NOTE: FlutterBackgroundService is not supported on oses other than '
+        'Android and iOS',
+      );
+    case _:
+      await startP3p(scheduleTasks: false, listen: false);
+
+      return;
   }
 
   final service = FlutterBackgroundService();
@@ -252,7 +255,7 @@ Future<void> startP3p({
       persist: I2pdPersistConf(),
       cpuext: I2pdCpuextConf(),
     ),
-    binPath: (await getAndroidNativeLibraryDirectory()).path,
+    binPath: await getBinPath(),
     libSoHack: Platform.isAndroid,
   );
   if (listen) {
@@ -294,4 +297,23 @@ Future<void> startP3p({
       ),
     );
   }
+}
+
+Future<String> getBinPath() async {
+  switch (getPlatform()) {
+    case OS.android:
+      (await getAndroidNativeLibraryDirectory()).path;
+
+    case _:
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.reload();
+      final binPath = prefs.getString('flutter_i2p.binPathOverride');
+      if (binPath != null) return binPath;
+      return switch (getPlatform()) {
+        OS.android =>
+          (await getAndroidNativeLibraryDirectory(forceRefresh: true)).path,
+        _ => p.join((await getApplicationSupportDirectory()).path, 'bin'),
+      };
+  }
+  return '/non_existent';
 }

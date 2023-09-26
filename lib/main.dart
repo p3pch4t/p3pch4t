@@ -3,11 +3,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_i2p/flutter_i2p.dart';
 import 'package:p3p/p3p.dart';
 import 'package:p3pch4t/consts.dart';
 import 'package:p3pch4t/pages/home.dart';
 import 'package:p3pch4t/pages/landing.dart';
-import 'package:p3pch4t/platform_interface.dart';
 import 'package:p3pch4t/service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,22 +17,36 @@ P3p? p3p;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await getAndroidNativeLibraryDirectory(forceRefresh: true);
   final prefs = await SharedPreferences.getInstance();
   if (prefs.getString('priv_key') == null) {
-    runApp(const MyApp(landing: true));
+    runApp(
+      MyApp(
+        w: await I2pdEnsure.checkAndRun(
+          app: const LandingPage(),
+          binPath: await getBinPath(),
+        ),
+      ),
+    );
     return;
   }
+
   if (Platform.isAndroid) {
     await Permission.notification.request();
   }
   await initializeService();
-  runApp(const MyApp(landing: false));
+  runApp(
+    MyApp(
+      w: await I2pdEnsure.checkAndRun(
+        app: const HomePage(),
+        binPath: await getBinPath(),
+      ),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({required this.landing, super.key});
-  final bool landing;
+  const MyApp({required this.w, super.key});
+  final Widget w;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -44,7 +58,7 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeData.dark(
         useMaterial3: true,
       ),
-      home: landing ? const LandingPage() : const HomePage(),
+      home: w,
     );
   }
 }
