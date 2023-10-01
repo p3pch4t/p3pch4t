@@ -6,6 +6,7 @@ import 'package:dart_pg/dart_pg.dart';
 import 'package:flutter/material.dart';
 import 'package:p3pch4t/helpers.dart';
 import 'package:p3pch4t/pages/home.dart';
+import 'package:p3pch4t/pages/register.dart';
 import 'package:p3pch4t/service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -49,34 +50,11 @@ class _LandingPageState extends State<LandingPage> {
               const Spacer(),
               OutlinedButton(
                 onPressed: () async {
-                  setState(() {
-                    isLoading = true;
-                  });
-                  final prefs = await SharedPreferences.getInstance();
-
-                  debugPrint('generating privkey...');
-                  final privkey = await OpenPGP.generateKey(
-                    ['name <user@example.org>'],
-                    'no_passpharse',
-                  );
-                  await prefs.setString('priv_key', privkey.armor());
-                  setState(() {
-                    isLoading = false;
-                  });
-                  if (!mounted) {
-                    await Future<void>.delayed(const Duration(seconds: 1));
-                    exit(1);
-                  }
-                  if (Platform.isAndroid) {
-                    await Permission.notification.request();
-                  }
-                  await initializeService();
-                  if (mounted) return;
                   // it is used safely here.
                   // ignore: use_build_context_synchronously
                   await Navigator.of(context).pushReplacement(
                     MaterialPageRoute<void>(
-                      builder: (context) => const HomePage(),
+                      builder: (context) => const RegisterPage(),
                     ),
                   );
                 },

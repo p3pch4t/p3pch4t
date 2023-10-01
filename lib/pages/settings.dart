@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i2p/flutter_i2p.dart';
 import 'package:p3pch4t/main.dart';
@@ -59,11 +60,11 @@ class _SettingsPageState extends State<SettingsPage> {
                 onPressed: () async {
                   final si = await p3p!.getSelfInfo();
                   si.name = nameCtrl.text;
-                  await p3p!.db.save(si);
-                  await p3p!.db.getAllUserInfo().then((value) {
+                  si.id = await p3p!.db.save(si);
+                  await p3p!.db.getAllUserInfo().then((value) async {
                     for (final element in value) {
                       element.lastIntroduce = DateTime(1998);
-                      p3p!.db.save(element);
+                      element.id = await p3p!.db.save(element);
                     }
                   });
                   if (!mounted) return;

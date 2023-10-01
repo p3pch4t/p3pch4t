@@ -78,8 +78,12 @@ class _WebxdcFileViewAndroidState extends State<WebxdcFileViewAndroid> {
         // I/flutter (14004):     "descr": "localuser scored 25 in Tower Builder!"
         // I/flutter (14004): }
         if (kDebugMode) print('p3p_native_sendUpdate:');
+        // p0.message is what we receive from the browser
         final jBody = json.decode(p0.message) as Map<String, dynamic>;
+        // what is interesting for us is the "update" field, as can be seen in
+        // comment above.
         final jBodyUpdate = jBody['update'] as Map<String, dynamic>;
+        // 'info' field, according to WebXDC field should be sent to the room.
         if (jBodyUpdate['info'] != null && jBodyUpdate['info'] != '') {
           await p3p!.sendMessage(
             widget.chatroom,
@@ -90,25 +94,33 @@ class _WebxdcFileViewAndroidState extends State<WebxdcFileViewAndroid> {
         // append the update to update file.
         final updateElm = await getUpdateElement();
         if (updateElm == null) {
+          // We don't have the .jsonp file - despite the fact that it was
+          // created.
           if (mounted) Navigator.of(context).pop();
           return;
         }
 
+        // For whatever reason I'd love to use microseconds, because idk
+        // but I can't because JS.
+        final timestamp = DateTime.now().millisecondsSinceEpoch;
         await updateElm.file.writeAsString(
-          "\n${json.encode(jBodyUpdate["payload"])}",
+          "\n$timestamp:${json.encode(jBodyUpdate["payload"])}",
           mode: FileMode.append,
           flush: true,
         );
-        final lines = await updateElm.file.readAsLines();
+
         await updateElm.updateContent(
           p3p!,
         );
         final jsPayload = '''
 for (let i = 0; i < window.webxdc.setUpdateListenerList.length; i++) {
   window.webxdc.setUpdateListenerList[i]({
+    // NOTE: Is it possible to exploit this somehow?
+    // talking about the dart side of things.
+    // I'm sorry for you if you had to dig here from JS world.
     "payload": ${json.encode(jBodyUpdate["payload"])},
-    "serial": ${lines.length},
-    "max_serial": ${lines.length},
+    "serial": $timestamp,
+    "max_serial": $timestamp,
     "info": null,
     "document": null,
     "summary": null,
@@ -140,17 +152,29 @@ for (let i = 0; i < window.webxdc.setUpdateListenerList.length; i++) {
           if (mounted) Navigator.of(context).pop();
           return;
         }
+        if (!updateElm.file.existsSync()) {
+          updateElm.file.createSync(recursive: true);
+        }
+        if (updateElm.file.lengthSync() == 0) {
+          return;
+        }
+        p3p?.print('updateElm.file.length: ${updateElm.file.lengthSync()}');
         final lines = updateElm.file.readAsLinesSync();
+        final regexp = RegExp('/^[0-9]+:/gm');
         for (var i = 0; i < lines.length; i++) {
+          final match = regexp.stringMatch(lines[i]);
+          if (match == null) continue;
+          final matchInt = match.replaceAll(':', '');
           try {
-            final payload = json.encode(json.decode(lines[i]));
+            final payload =
+                json.encode(json.decode(lines[i].substring(match.length)));
             final jsPayload = '''
 console.log("setUpdateListener: hook id: $i");
 
 window.webxdc.setUpdateListenerList[${(jBody["listId"] as int) - 1}]({
   "payload": $payload,
-  "serial": $i,
-  "max_serial": ${lines.length},
+  "serial": $matchInt,
+  "max_serial": $matchInt,
   "info": null,
   "document": null,
   "summary": null,
@@ -210,7 +234,7 @@ window.webxdc.setUpdateListenerList[${(jBody["listId"] as int) - 1}]({
     final elms = await widget.chatroom.fileStore.getFileStoreElement(p3p!);
     final wpath = widget.webxdcFile.path;
     final desiredPath = p.normalize(
-      (wpath.split('/')
+      (wpath.split(Platform.isWindows ? r'\' : '/')
             ..removeLast()
             ..add('.${p.basename(wpath)}.update.jsonp'))
           .join('/'),
@@ -221,6 +245,8 @@ window.webxdc.setUpdateListenerList[${(jBody["listId"] as int) - 1}]({
         updateElm = felm;
       }
     }
+    print(desiredPath);
+    print(updateElm?.path);
     if (updateElm == null) {
       updateElm = await widget.chatroom.fileStore.putFileStoreElement(
         p3p!,
@@ -232,7 +258,8 @@ window.webxdc.setUpdateListenerList[${(jBody["listId"] as int) - 1}]({
       )
         ..shouldFetch = true;
       await updateElm.updateContent(p3p!);
-
+      print(desiredPath);
+      print(updateElm.path);
       return updateElm;
     }
     return updateElm;

@@ -38,9 +38,9 @@ class _FileViewState extends State<FileView> {
           children: [
             if (file.downloadedSizeBytes != file.sizeBytes)
               LinearProgressIndicator(
-                value: file.downloadedSizeBytes == 0
+                value: file.downloadedSizeBytes == 0 || file.sizeBytes == 0
                     ? null
-                    : file.downloadedSizeBytes / file.sizeBytes,
+                    : file.downloadedSizeBytes / file.sizeBytes + 1,
               ),
             SelectableText(const JsonEncoder.withIndent('   ').convert(file)),
             TextField(

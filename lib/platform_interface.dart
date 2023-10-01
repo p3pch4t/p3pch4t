@@ -9,20 +9,23 @@ const _platform = MethodChannel('net.mrcyjanek.p3pch4t/nativelibrarydir');
 Future<Directory> getAndroidNativeLibraryDirectory({
   bool forceRefresh = false,
 }) async {
+  var state = 'prefs';
   final prefs = await SharedPreferences.getInstance();
   var nldir =
       prefs.getString('net.mrcyjanek.net.getAndroidNativeLibraryDirectory');
 
   if (nldir == null || forceRefresh) {
+    state = 'firstif';
     nldir = await _platform
         .invokeMethod<String?>('getAndroidNativeLibraryDirectory');
     if (nldir != null) {
+      state = 'secondif';
       await prefs.setString(
         'net.mrcyjanek.net.getAndroidNativeLibraryDirectory',
         nldir,
       );
     }
   }
-  if (nldir == null) return Directory('/non_existent');
+  if (nldir == null) return Directory('/non_existent/$state');
   return Directory(nldir);
 }

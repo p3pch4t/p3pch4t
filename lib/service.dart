@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:dart_i2p/dart_i2p.dart';
 import 'package:flutter/foundation.dart';
@@ -85,8 +86,8 @@ Future<void> initializeService() async {
 }
 
 Future<void> onStart(ServiceInstance service) async {
-  WidgetsFlutterBinding.ensureInitialized();
-  // DartPluginRegistrant.ensureInitialized();
+  // WidgetsFlutterBinding.ensureInitialized();
+  DartPluginRegistrant.ensureInitialized();
   if (p3p == null) {
     if (kDebugMode) {
       print("NOTE: it looks like p3pch4t is not loaded, let's start it");
@@ -274,10 +275,11 @@ Future<void> startP3p({
     filestore,
     prefs.getString('priv_key')!,
     prefs.getString('priv_passpharse') ?? 'no_passpharse',
-    db.DatabaseImplDrift(
-      dbFolder: p.join(filestore, 'dbdrift'),
-      singularFileStore: false,
-    ),
+    await DatabaseImplIsar.open(dbPath: p.join(filestore, 'dbisar')),
+    // db.DatabaseImplDrift(
+    //   dbFolder: p.join(filestore, 'dbdrift'),
+    //   singularFileStore: false,
+    // ),
     scheduleTasks: scheduleTasks,
     listen: listen,
     reachableI2p: eepsite == null
@@ -302,7 +304,7 @@ Future<void> startP3p({
 Future<String> getBinPath() async {
   switch (getPlatform()) {
     case OS.android:
-      (await getAndroidNativeLibraryDirectory()).path;
+      return (await getAndroidNativeLibraryDirectory()).path;
 
     case _:
       final prefs = await SharedPreferences.getInstance();
@@ -315,5 +317,4 @@ Future<String> getBinPath() async {
         _ => p.join((await getApplicationSupportDirectory()).path, 'bin'),
       };
   }
-  return '/non_existent';
 }

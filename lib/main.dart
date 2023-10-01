@@ -8,6 +8,7 @@ import 'package:p3p/p3p.dart';
 import 'package:p3pch4t/consts.dart';
 import 'package:p3pch4t/pages/home.dart';
 import 'package:p3pch4t/pages/landing.dart';
+import 'package:p3pch4t/platform_interface.dart';
 import 'package:p3pch4t/service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,6 +18,10 @@ P3p? p3p;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // we need to call it here because otherwise it may not store information
+  // about path used in the SharedPreferences - that will lead to I2pdEnsure
+  // (and possibly others) being unable to find the path.
+  await getAndroidNativeLibraryDirectory(forceRefresh: true);
   final prefs = await SharedPreferences.getInstance();
   if (prefs.getString('priv_key') == null) {
     runApp(
