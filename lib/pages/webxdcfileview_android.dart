@@ -245,8 +245,8 @@ window.webxdc.setUpdateListenerList[${(jBody["listId"] as int) - 1}]({
         updateElm = felm;
       }
     }
-    print(desiredPath);
-    print(updateElm?.path);
+    p3p!.print(desiredPath);
+    p3p!.print(updateElm?.path);
     if (updateElm == null) {
       updateElm = await widget.chatroom.fileStore.putFileStoreElement(
         p3p!,
@@ -258,8 +258,8 @@ window.webxdc.setUpdateListenerList[${(jBody["listId"] as int) - 1}]({
       )
         ..shouldFetch = true;
       await updateElm.updateContent(p3p!);
-      print(desiredPath);
-      print(updateElm.path);
+      p3p!.print(desiredPath);
+      p3p!.print(updateElm.path);
       return updateElm;
     }
     return updateElm;

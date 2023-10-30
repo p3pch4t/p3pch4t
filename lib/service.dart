@@ -6,13 +6,11 @@ import 'dart:ui';
 
 import 'package:dart_i2p/dart_i2p.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_background_service_android/flutter_background_service_android.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:p3p/p3p.dart';
 // ignore: implementation_imports
-import 'package:p3p/src/database/drift.dart' as db;
 import 'package:p3pch4t/main.dart';
 import 'package:p3pch4t/platform_interface.dart';
 import 'package:p3pch4t/switch_platform.dart';

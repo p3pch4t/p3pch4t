@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:p3pch4t/consts.dart';
+import 'package:p3pch4t/switch_platform.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class VersionWidget extends StatefulWidget {
@@ -124,7 +125,12 @@ class _VersionWidgetState extends State<VersionWidget> {
           child: OutlinedButton(
             onPressed: () {
               launchUrl(
-                Uri.parse('https://p3p.mrcyjanek.net/archive/latest/android'),
+                Uri.parse(
+                  'https://p3p.mrcyjanek.net/archive/latest/${switch (getPlatform()) {
+                    OS.android => "android",
+                    _ => "",
+                  }}',
+                ),
                 mode: LaunchMode.externalApplication,
               );
             },

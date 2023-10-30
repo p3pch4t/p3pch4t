@@ -1,4 +1,4 @@
-// ignore_for_file: public_member_api_docs
+// ignore_for_file: public_member_api_docs, library_private_types_in_public_api
 
 import 'dart:async';
 import 'dart:math';

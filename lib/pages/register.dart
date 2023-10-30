@@ -75,9 +75,9 @@ class _RegisterPageState extends State<RegisterPage> {
                     context: context,
                     barrierDismissible: false,
                     builder: (context) {
-                      return Container(
+                      return const ColoredBox(
                         color: Colors.grey,
-                        child: const Center(
+                        child: Center(
                           child: CircularProgressIndicator(
                             color: Colors.white,
                           ),
@@ -86,7 +86,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     },
                   ),
                 );
-                await Future.delayed(const Duration(milliseconds: 222));
+                await Future<void>.delayed(const Duration(milliseconds: 222));
                 final prefs = await SharedPreferences.getInstance();
 
                 debugPrint('generating privkey...');
@@ -116,10 +116,12 @@ class _RegisterPageState extends State<RegisterPage> {
                 publicKey!.id = await p3p!.db.save(publicKey);
                 selfUser.publicKey = publicKey;
                 selfUser.id = await p3p!.db.save(selfUser);
+                if (!mounted) return;
                 Navigator.of(context).pop();
-                await Future.delayed(const Duration(milliseconds: 222));
+                await Future<void>.delayed(const Duration(milliseconds: 222));
+                if (!mounted) return;
                 await Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
+                  MaterialPageRoute<void>(
                     builder: (context) => const HomePage(),
                   ),
                 );
