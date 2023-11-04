@@ -94,6 +94,7 @@ Future<void> onStart(ServiceInstance service) async {
     await startP3p(scheduleTasks: true, listen: true);
     p3p?.print('p3p started...');
   }
+
   if (p3p == null) {
     if (kDebugMode) {
       print('NOTE: p3p failed to start. for reason unknown to us. Sorry.');

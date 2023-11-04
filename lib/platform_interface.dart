@@ -9,6 +9,9 @@ const _platform = MethodChannel('net.mrcyjanek.p3pch4t/nativelibrarydir');
 Future<Directory> getAndroidNativeLibraryDirectory({
   bool forceRefresh = false,
 }) async {
+  if (!Platform.isAndroid) {
+    return Directory('/non_existent/you_are_not_android');
+  }
   var state = 'prefs';
   final prefs = await SharedPreferences.getInstance();
   var nldir =

@@ -100,7 +100,7 @@ class _AddUserPageState extends State<AddUserPage> {
     while (true) {
       final cameraScanResult = await scanner.scan();
       if (cameraScanResult == null) break;
-
+      print('scan:$cameraScanResult');
       final list = cameraScanResult.split('|');
       final meta = list[0].split('/');
       total = int.parse(meta[1]);
