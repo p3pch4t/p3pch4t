@@ -3,15 +3,11 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dart_pg/dart_pg.dart' as pgp;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:p3p/p3p.dart';
 import 'package:p3pch4t/main.dart';
 import 'package:p3pch4t/pages/home.dart';
-import 'package:p3pch4t/service.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -86,36 +82,21 @@ class _RegisterPageState extends State<RegisterPage> {
                     },
                   ),
                 );
-                await Future<void>.delayed(const Duration(milliseconds: 222));
-                final prefs = await SharedPreferences.getInstance();
+                // final prefs = await SharedPreferences.getInstance();
 
-                debugPrint('generating privkey...');
-                final privkey = await pgp.OpenPGP.generateKey(
-                  ['${usernameCtrl.text} <${emailCtrl.text}>'],
-                  'no_passpharse',
-                );
-                await prefs.setString('priv_key', privkey.armor());
                 if (Platform.isAndroid || Platform.isIOS) {
                   await Permission.notification.request();
                 }
-                await initializeService();
-                final selfUser = await p3p!.getSelfInfo();
-                selfUser.endpoint = [
-                  if (localEnabled) ...ReachableLocal.getDefaultEndpoints(p3p!),
-                  if (relayEnabled) ...ReachableRelay.getDefaultEndpoints(p3p!),
-                  if (i2pEnabled) ...ReachableI2p.getDefaultEndpoints(p3p!),
-                ];
-                await prefs.setBool('reachable.local', localEnabled);
-                await prefs.setBool('reachable.relay', relayEnabled);
-                await prefs.setBool('reachable.i2p', i2pEnabled);
-                selfUser.name = usernameCtrl.text;
-                final publicKey = await PublicKey.create(
-                  p3p!,
-                  p3p!.privateKey.toPublic.armor(),
+                // await initializeService();
+                final selfUser = p3p.createSelfInfo(
+                  usernameCtrl.text,
+                  emailCtrl.text,
+                  keySize,
                 );
-                publicKey!.id = await p3p!.db.save(publicKey);
-                selfUser.publicKey = publicKey;
-                selfUser.id = await p3p!.db.save(selfUser);
+                // await prefs.setBool('reachable.local', localEnabled);
+                // await prefs.setBool('reachable.relay', relayEnabled);
+                // await prefs.setBool('reachable.i2p', i2pEnabled);
+
                 if (!mounted) return;
                 Navigator.of(context).pop();
                 await Future<void>.delayed(const Duration(milliseconds: 222));
@@ -151,30 +132,32 @@ class _RegisterPageState extends State<RegisterPage> {
             'Local is required for i2p transport and local-network connections',
           ),
         ),
-      CheckboxListTile(
-        value: relayEnabled,
-        onChanged: (val) => setState(() {
-          relayEnabled = val == true;
-        }),
-        title: const Text('Relay Transport (recommended)'),
-        subtitle: const Text(
-          'Relay uses federated servers to deliver messages to recipents',
+      if (kDebugMode)
+        CheckboxListTile(
+          value: relayEnabled,
+          onChanged: (val) => setState(() {
+            relayEnabled = val == true;
+          }),
+          title: const Text('Relay Transport (recommended)'),
+          subtitle: const Text(
+            'Relay uses federated servers to deliver messages to recipents',
+          ),
         ),
-      ),
-      CheckboxListTile(
-        value: i2pEnabled,
-        onChanged: (val) => setState(() {
-          i2pEnabled = val == true;
-          if (localEnabled == false && val == true) {
-            localEnabled = true;
-          }
-        }),
-        title: const Text('P2P i2p transport'),
-        subtitle: const Text(
-          'Use i2p peer-to-peer network to contact other peers it may increase '
-          'battery usage significantly.',
+      if (kDebugMode)
+        CheckboxListTile(
+          value: i2pEnabled,
+          onChanged: (val) => setState(() {
+            i2pEnabled = val == true;
+            if (localEnabled == false && val == true) {
+              localEnabled = true;
+            }
+          }),
+          title: const Text('P2P i2p transport'),
+          subtitle: const Text(
+            'Use i2p peer-to-peer network to contact other peers it may increase '
+            'battery usage significantly.',
+          ),
         ),
-      ),
     ];
   }
 
@@ -213,16 +196,16 @@ class _RegisterPageState extends State<RegisterPage> {
     ];
   }
 
-  pgp.RSAKeySize keySize = pgp.RSAKeySize.s4096;
+  int keySize = 4096;
 
   List<Widget> keySizeSelect() {
     return [
       ListTile(
         title: const Text('4096 bit (recommended)'),
-        leading: Radio<pgp.RSAKeySize>(
-          value: pgp.RSAKeySize.s4096,
+        leading: Radio<int>(
+          value: 4096,
           groupValue: keySize,
-          onChanged: (pgp.RSAKeySize? value) {
+          onChanged: (int? value) {
             if (value != null) {
               setState(() {
                 keySize = value;
@@ -234,10 +217,10 @@ class _RegisterPageState extends State<RegisterPage> {
       if (kDebugMode)
         ListTile(
           title: const Text('3584 bit [debug]'),
-          leading: Radio<pgp.RSAKeySize>(
-            value: pgp.RSAKeySize.s3584,
+          leading: Radio<int>(
+            value: 3584,
             groupValue: keySize,
-            onChanged: (pgp.RSAKeySize? value) {
+            onChanged: (int? value) {
               if (value != null) {
                 setState(() {
                   keySize = value;
@@ -249,10 +232,10 @@ class _RegisterPageState extends State<RegisterPage> {
       if (kDebugMode)
         ListTile(
           title: const Text('3072 bit [debug]'),
-          leading: Radio<pgp.RSAKeySize>(
-            value: pgp.RSAKeySize.s3072,
+          leading: Radio<int>(
+            value: 3072,
             groupValue: keySize,
-            onChanged: (pgp.RSAKeySize? value) {
+            onChanged: (int? value) {
               if (value != null) {
                 setState(() {
                   keySize = value;
@@ -264,10 +247,10 @@ class _RegisterPageState extends State<RegisterPage> {
       if (kDebugMode)
         ListTile(
           title: const Text('2560 bit [debug]'),
-          leading: Radio<pgp.RSAKeySize>(
-            value: pgp.RSAKeySize.s2560,
+          leading: Radio<int>(
+            value: 2560,
             groupValue: keySize,
-            onChanged: (pgp.RSAKeySize? value) {
+            onChanged: (int? value) {
               if (value != null) {
                 setState(() {
                   keySize = value;
@@ -278,10 +261,10 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       ListTile(
         title: const Text('2048 bit (for slow devices)'),
-        leading: Radio<pgp.RSAKeySize>(
-          value: pgp.RSAKeySize.s2048,
+        leading: Radio<int>(
+          value: 2048,
           groupValue: keySize,
-          onChanged: (pgp.RSAKeySize? value) {
+          onChanged: (int? value) {
             if (value != null) {
               setState(() {
                 keySize = value;

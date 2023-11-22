@@ -7,7 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:p3p/p3p.dart';
-import 'package:p3pch4t/main.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class FileView extends StatefulWidget {
@@ -68,7 +67,7 @@ class _FileViewState extends State<FileView> {
               title: const Text('Should sync'),
               value: file.shouldFetch,
               onChanged: (bool? value) async {
-                file.shouldFetch = value!;
+                file.shouldFetch = value;
                 await saveElement();
               },
             ),
@@ -76,7 +75,7 @@ class _FileViewState extends State<FileView> {
               title: const Text('Is deleted?'),
               value: file.isDeleted,
               onChanged: (bool? value) async {
-                file.isDeleted = value!;
+                file.isDeleted = value;
                 await saveElement();
               },
             ),
@@ -98,7 +97,7 @@ class _FileViewState extends State<FileView> {
       print('saveElement:');
     }
     file.path = pathCtrl.text;
-    await file.saveAndBroadcast(p3p!);
+    // await file.saveAndBroadcast(p3p!);
     setState(() {});
   }
 }

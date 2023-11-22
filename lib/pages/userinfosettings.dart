@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:p3p/p3p.dart';
 
-class UserInfoPage extends StatelessWidget {
+class UserInfoPage extends StatefulWidget {
   const UserInfoPage({
     required this.userInfo,
     super.key,
@@ -12,16 +12,32 @@ class UserInfoPage extends StatelessWidget {
   final UserInfo userInfo;
 
   @override
+  State<UserInfoPage> createState() => _UserInfoPageState();
+}
+
+class _UserInfoPageState extends State<UserInfoPage> {
+  late final endpointCtrl =
+      TextEditingController(text: widget.userInfo.endpoint);
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(userInfo.name.toString()),
+        title: Text(widget.userInfo.name),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SelectableText('debug info about object ${userInfo.id}\n'
-                'endpoints: ${userInfo.endpoint.toList()}'),
+            TextField(
+              controller: endpointCtrl,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                label: Text('Endpoint'),
+              ),
+              onChanged: (String value) {
+                widget.userInfo.endpoint = value;
+              },
+            ),
           ],
         ),
       ),

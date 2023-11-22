@@ -85,7 +85,7 @@ class _WebxdcFileViewAndroidState extends State<WebxdcFileViewAndroid> {
         final jBodyUpdate = jBody['update'] as Map<String, dynamic>;
         // 'info' field, according to WebXDC field should be sent to the room.
         if (jBodyUpdate['info'] != null && jBodyUpdate['info'] != '') {
-          await p3p!.sendMessage(
+          p3p.sendMessage(
             widget.chatroom,
             jBodyUpdate['info'].toString(),
             type: MessageType.service,
@@ -109,9 +109,7 @@ class _WebxdcFileViewAndroidState extends State<WebxdcFileViewAndroid> {
           flush: true,
         );
 
-        await updateElm.updateContent(
-          p3p!,
-        );
+        p3p.updateFileContent(updateElm);
         final jsPayload = '''
 for (let i = 0; i < window.webxdc.setUpdateListenerList.length; i++) {
   window.webxdc.setUpdateListenerList[i]({
@@ -158,7 +156,7 @@ for (let i = 0; i < window.webxdc.setUpdateListenerList.length; i++) {
         if (updateElm.file.lengthSync() == 0) {
           return;
         }
-        p3p?.print('updateElm.file.length: ${updateElm.file.lengthSync()}');
+        p3p.print('updateElm.file.length: ${updateElm.file.lengthSync()}');
         final lines = updateElm.file.readAsLinesSync();
         final regexp = RegExp('/^[0-9]+:/gm');
         for (var i = 0; i < lines.length; i++) {
@@ -231,7 +229,9 @@ window.webxdc.setUpdateListenerList[${(jBody["listId"] as int) - 1}]({
   }
 
   Future<FileStoreElement?> getUpdateElement() async {
-    final elms = await widget.chatroom.fileStore.getFileStoreElement(p3p!);
+    final elms = p3p.getFileStoreElements(
+      widget.chatroom,
+    ); //await widget.chatroom.fileStore.getFileStoreElement(p3p!);
     final wpath = widget.webxdcFile.path;
     final desiredPath = p.normalize(
       (wpath.split(Platform.isWindows ? r'\' : '/')
@@ -245,21 +245,21 @@ window.webxdc.setUpdateListenerList[${(jBody["listId"] as int) - 1}]({
         updateElm = felm;
       }
     }
-    p3p!.print(desiredPath);
-    p3p!.print(updateElm?.path);
+    p3p.print(desiredPath);
+    p3p.print(updateElm?.path);
     if (updateElm == null) {
-      updateElm = await widget.chatroom.fileStore.putFileStoreElement(
-        p3p!,
+      updateElm = p3p.putFileStoreElement(
+        widget.chatroom,
         localFile: null,
         localFileSha512sum: null,
         sizeBytes: 0,
         fileInChatPath: desiredPath,
         uuid: null,
-      )
-        ..shouldFetch = true;
-      await updateElm.updateContent(p3p!);
-      p3p!.print(desiredPath);
-      p3p!.print(updateElm.path);
+        shouldFetch: true,
+      );
+      p3p.updateFileContent(updateElm);
+      p3p.print(desiredPath);
+      p3p.print(updateElm.path);
       return updateElm;
     }
     return updateElm;

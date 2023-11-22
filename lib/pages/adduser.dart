@@ -5,7 +5,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:p3p/p3p.dart';
-import 'package:p3pch4t/helpers.dart';
 import 'package:p3pch4t/main.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -19,23 +18,12 @@ class AddUserPage extends StatefulWidget {
 }
 
 class _AddUserPageState extends State<AddUserPage> {
-  UserInfo? selfUi;
+  UserInfo selfUi = p3p.getSelfInfo();
 
   final TextEditingController pkCtrl = TextEditingController();
 
   @override
-  void initState() {
-    p3p!.getSelfInfo().then((value) {
-      setState(() => selfUi = value);
-    });
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (selfUi == null || selfUi?.publicKey == null) {
-      return const LoadingPlaceholder();
-    }
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add new contact'),
@@ -43,7 +31,7 @@ class _AddUserPageState extends State<AddUserPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SelectableText(selfUi!.publicKey.fingerprint),
+            SelectableText(selfUi.publicKey.fingerprint),
             TextField(
               controller: pkCtrl,
               minLines: 1,
@@ -56,7 +44,7 @@ class _AddUserPageState extends State<AddUserPage> {
               width: double.maxFinite,
               child: ElevatedButton(
                 onPressed: () async {
-                  final ui = await UserInfo.create(p3p!, pkCtrl.text);
+                  final ui = p3p.addUserFromPublicKey(pkCtrl.text);
                   if (ui == null) {
                     return;
                   }
@@ -66,7 +54,7 @@ class _AddUserPageState extends State<AddUserPage> {
                 child: const Text('Add'),
               ),
             ),
-            URQR(text: selfUi!.publicKey.publickey),
+            URQR(text: selfUi.publicKey.armored),
             const Text(
               'After scanning one part of qr, click the code to move to '
               'the next part',
@@ -81,7 +69,7 @@ class _AddUserPageState extends State<AddUserPage> {
             ),
             const Divider(),
             SelectableText(
-              selfUi!.publicKey.publickey,
+              selfUi.publicKey.armored,
               style: const TextStyle(
                 fontFamily: 'monospace',
                 fontSize: 7,

@@ -14,55 +14,20 @@ class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() =>
-      // ignore: no_logic_in_create_state
-      p3p == null ? _HomePageErrorState() : _HomePageState();
-}
-
-class _HomePageErrorState extends State<HomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('No p3p'),
-      ),
-    );
-  }
+  State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  List<UserInfo> users = [];
+  Iterable<UserInfo> users = [];
 
   @override
   void initState() {
     loadUsers();
-    loadEventCallback();
     super.initState();
   }
 
-  @override
-  void dispose() {
-    p3p!.onEventCallback.removeAt(_onEventCallbackIndex);
-    super.dispose();
-  }
-
-  int _onEventCallbackIndex = -1;
-
-  void loadEventCallback() {
-    p3p!.onEventCallback.add(_eventCallback);
-    setState(() {
-      _onEventCallbackIndex = p3p!.onEventCallback.length - 1;
-    });
-  }
-
-  Future<bool> _eventCallback(P3p p3p, Event evt, UserInfo ui) async {
-    if (evt.eventType != EventType.introduce) return false;
-    await loadUsers();
-    return false;
-  }
-
   Future<void> loadUsers() async {
-    final value = await p3p!.db.getAllUserInfo();
+    final value = p3p.getAllUserInfo();
     setState(() {
       users = value;
     });
@@ -120,37 +85,32 @@ class _HomePageState extends State<HomePage> {
             child: ListView.builder(
               itemCount: users.length,
               itemBuilder: (context, index) {
+                final ui = users.elementAt(index);
                 return Card(
                   child: ListTile(
                     onTap: () async {
-                      final ui = await p3p!.db.getUserInfo(
-                        publicKey: users[index].publicKey,
-                      );
                       if (!mounted) return;
                       await Navigator.of(context).push(
                         MaterialPageRoute<void>(
                           builder: (context) => ChatPage(
-                            userInfo: ui!,
+                            userInfo: ui,
                           ),
                         ),
                       );
                       await loadUsers();
                     },
                     onLongPress: () async {
-                      final ui = await p3p!.db.getUserInfo(
-                        publicKey: users[index].publicKey,
-                      );
                       if (!mounted) return;
                       await Navigator.of(context).push(
                         MaterialPageRoute<void>(
                           builder: (context) {
-                            return UserInfoPage(userInfo: ui!);
+                            return UserInfoPage(userInfo: ui);
                           },
                         ),
                       );
                     },
-                    title: Text('$index. ${users[index].name}'),
-                    subtitle: Text(users[index].publicKey.fingerprint),
+                    title: Text('$index. ${ui.name}'),
+                    subtitle: Text(ui.publicKey.fingerprint),
                   ),
                 );
               },

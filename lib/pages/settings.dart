@@ -13,17 +13,9 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  final nameCtrl = TextEditingController();
-
-  @override
-  void initState() {
-    p3p!.getSelfInfo().then((value) {
-      setState(() {
-        nameCtrl.text = value.name ?? 'Unknown';
-      });
-    });
-    super.initState();
-  }
+  final _si = p3p.getSelfInfo();
+  late final nameCtrl = TextEditingController(text: _si.name);
+  late final endpointCtrl = TextEditingController(text: _si.endpoint);
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +31,14 @@ class _SettingsPageState extends State<SettingsPage> {
               TextField(
                 controller: nameCtrl,
                 decoration: const InputDecoration(
+                  label: Text('Username'),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              TextField(
+                controller: endpointCtrl,
+                decoration: const InputDecoration(
+                  label: Text('Endpoint'),
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -57,16 +57,8 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               OutlinedButton(
                 onPressed: () async {
-                  final si = await p3p!.getSelfInfo();
-                  si.name = nameCtrl.text;
-                  si.id = await p3p!.db.save(si);
-                  await p3p!.db.getAllUserInfo().then((value) async {
-                    for (final element in value) {
-                      element.lastIntroduce = DateTime(1998);
-                      element.id = await p3p!.db.save(element);
-                    }
-                  });
-                  if (!mounted) return;
+                  _si.name = nameCtrl.text;
+                  _si.endpoint = endpointCtrl.text;
                   Navigator.of(context).pop();
                 },
                 child: const Text('Save and exit'),

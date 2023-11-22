@@ -37,8 +37,6 @@ dependencies:
   shared_preferences: ^2.2.0
   shelf: ^1.4.1
   sqlite3_flutter_libs: ^0.5.0
-  ssmdc:
-    path: ../ssmdc.dart
   url_launcher: ^6.1.12
   uuid: ^4.1.0
   webview_flutter: ^4.2.2

@@ -32,7 +32,7 @@ class _FileManagerState extends State<FileManager> {
   late final roomFingerprint = widget.roomFingerprint;
   late final chatroom = widget.chatroom;
 
-  List<FileStoreElement> files = [];
+  Iterable<FileStoreElement> files = [];
   String path = '/';
 
   @override
@@ -42,7 +42,7 @@ class _FileManagerState extends State<FileManager> {
   }
 
   Future<void> loadFiles() async {
-    final newFiles = await fileStore.getFileStoreElement(p3p!);
+    final newFiles = p3p.getFileStoreElements(chatroom);
     setState(() {
       files = newFiles;
     });
@@ -96,16 +96,19 @@ class _FileManagerState extends State<FileManager> {
             final dateSlug = '${today.year}-'
                 '${today.month.toString().padLeft(2, '0')}-'
                 '${today.day.toString().padLeft(2, '0')}';
-            await fileStore.putFileStoreElement(
-              p3p!,
+            p3p.putFileStoreElement(
+              chatroom,
               localFile: File(file.path!),
-              localFileSha512sum: FileStoreElement.calcSha512Sum(
-                await File(file.path!).readAsBytes(),
-              ),
+              localFileSha512sum: '',
+              // localFileSha512sum: FileStoreElement.calcSha512Sum(
+              //   await File(file.path!).readAsBytes(),
+              // ),
               sizeBytes: await File(file.path!).length(),
               fileInChatPath: '/Unsort/$dateSlug/${file.name}',
               uuid: null,
+              shouldFetch: true,
             );
+
             await loadFiles();
           }
           await loadFiles();

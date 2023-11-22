@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:p3pch4t/helpers.dart';
 import 'package:p3pch4t/pages/home.dart';
 import 'package:p3pch4t/pages/register.dart';
-import 'package:p3pch4t/service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LandingPage extends StatefulWidget {
@@ -128,7 +127,7 @@ class _LoginPageState extends State<LoginPage> {
                       setState(() {
                         isLoading = false;
                       });
-                      await initializeService();
+                      // await initializeService();
                       if (!mounted) {
                         await Future<void>.delayed(const Duration(seconds: 1));
                         exit(1);

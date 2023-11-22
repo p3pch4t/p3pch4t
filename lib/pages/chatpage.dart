@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:p3p/p3p.dart';
 import 'package:p3pch4t/main.dart';
-import 'package:p3pch4t/pages/filemanager.dart';
 import 'package:p3pch4t/pages/widgets/richtext.dart';
 
 class ChatPage extends StatefulWidget {
@@ -19,36 +18,16 @@ class _ChatPageState extends State<ChatPage> {
   late final userInfo = widget.userInfo;
   final msgCtrl = TextEditingController();
 
-  List<Message> msgs = [];
+  Iterable<Message> msgs = [];
 
   @override
   void initState() {
     loadMessages();
-    loadMessageCallback();
     super.initState();
   }
 
-  @override
-  void dispose() {
-    p3p!.onMessageCallback.removeAt(_messageCallbackIndex);
-    super.dispose();
-  }
-
-  int _messageCallbackIndex = -1;
-  void loadMessageCallback() {
-    p3p!.onMessageCallback.add(_messageCallback);
-    setState(() {
-      _messageCallbackIndex = p3p!.onMessageCallback.length - 1;
-    });
-  }
-
-  Future<void> _messageCallback(P3p p3p, Message msg, UserInfo ui) async {
-    if (ui.id != userInfo.id) return; // only current open chat events
-    await loadMessages();
-  }
-
   Future<void> loadMessages() async {
-    final newMsgs = await userInfo.getMessages(p3p!);
+    final newMsgs = p3p.getMessages(userInfo);
     if (!mounted) return;
     setState(() {
       msgs = newMsgs;
@@ -57,42 +36,42 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    final rmsgs = msgs.reversed.toList();
+    // final rmsgs = msgs.reversed.toList();
     return Scaffold(
       appBar: AppBar(
-        title: Text(userInfo.name ?? 'name unknown'),
+        title: Text(userInfo.name),
       ),
-      endDrawer: Drawer(
-        child: FileManager(
-          fileStore: userInfo.fileStore,
-          roomFingerprint: userInfo.publicKey.fingerprint,
-          chatroom: userInfo,
-        ),
-      ),
+      // endDrawer: Drawer(
+      //   child: FileManager(
+      //     fileStore: userInfo.fileStore,
+      //     roomFingerprint: userInfo.publicKey.fingerprint,
+      //     chatroom: userInfo,
+      //   ),
+      // ),
       body: Column(
         children: [
           Expanded(
             child: ListView.builder(
               reverse: true,
-              itemCount: rmsgs.length,
+              itemCount: msgs.length,
               itemBuilder: (context, index) {
+                final msg = msgs.elementAt(index);
                 return Padding(
                   padding: const EdgeInsets.all(4),
-                  child: switch (rmsgs[index].type) {
+                  child: switch (msg.type) {
                     MessageType.text => SizedBox(
                         width: double.maxFinite,
                         child: RichTextView(
-                          text: rmsgs[index].text,
-                          dateReceived: rmsgs[index].dateReceived,
-                          textAlign: rmsgs[index].incoming
-                              ? TextAlign.start
-                              : TextAlign.end,
+                          text: msg.text,
+                          dateReceived: msg.dateReceived,
+                          textAlign:
+                              msg.incoming ? TextAlign.start : TextAlign.end,
                         ),
                       ),
                     MessageType.service => Center(
                         child: RichTextView(
-                          text: rmsgs[index].text,
-                          dateReceived: rmsgs[index].dateReceived,
+                          text: msg.text,
+                          dateReceived: msg.dateReceived,
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -107,7 +86,7 @@ class _ChatPageState extends State<ChatPage> {
             width: double.maxFinite,
             child: TextField(
               onSubmitted: (value) async {
-                await p3p!.sendMessage(
+                p3p.sendMessage(
                   userInfo,
                   msgCtrl.text,
                 );

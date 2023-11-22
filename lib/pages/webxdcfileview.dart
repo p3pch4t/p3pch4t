@@ -46,7 +46,7 @@ class _WebxdcFileViewState extends State<WebxdcFileView> {
     try {
       startLocalServer();
     } catch (e) {
-      p3p?.print('[webxdc] startLocalServer: $e');
+      p3p.print('[webxdc] startLocalServer: $e');
     }
     super.initState();
   }
@@ -56,7 +56,7 @@ class _WebxdcFileViewState extends State<WebxdcFileView> {
     try {
       server.close();
     } catch (e) {
-      p3p?.print('[webxdc] server.close(): $e');
+      p3p.print('[webxdc] server.close(): $e');
     }
 
     super.dispose();
@@ -92,7 +92,7 @@ class _WebxdcFileViewState extends State<WebxdcFileView> {
     if (path == '') path = 'index.html';
     switch (path) {
       case 'webxdc.js' || '/webxdc.js':
-        final si = await p3p!.getSelfInfo();
+        final si = p3p.getSelfInfo();
         return Response.ok(
           '''
 console.log("[webxdc.js]: loaded native implementation on browser side");
@@ -117,7 +117,7 @@ window.webxdc = {
     p3p_native_sendToChat(JSON.stringify(message));
   },
   importFiles: function (filter) {}, // TODO: implement
-  selfAddr: `${si.publicKey.publickey}`,
+  selfAddr: `${si.publicKey.armored /* TODO: make this code atob btoa */}`,
   selfName: `${si.name}`,
   // END OF OFFICIAL IMPLEMENTATION, p3p extensions below
 
