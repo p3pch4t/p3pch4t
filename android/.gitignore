@@ -12,3 +12,4 @@ key.properties
 **/*.keystore
 **/*.jks
 i2plib.jar
+p3plib.jar
