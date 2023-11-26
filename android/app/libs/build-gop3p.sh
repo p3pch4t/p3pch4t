@@ -5,10 +5,11 @@
 set -xe
 cd $(dirname $0)
 P3PGO_BRANCH="master"
+COPY_DIR="../../../../p3pgo/"
 CLONE_URL="ssh://gitea@git.mrcyjanek.net:2222/p3pch4t/p3pgo.git"
 BUILD_DIR=$(mktemp -d)
 CLONE_DIR=$(mktemp -d)
-git clone -b "$P3PGO_BRANCH" "$CLONE_URL" "$CLONE_DIR" --depth=1
+[[ -d "$COPY_DIR" ]] && (cp -a $COPY_DIR/{*,.*} $CLONE_DIR) || (git clone -b "$P3PGO_BRANCH" "$CLONE_URL" "$CLONE_DIR" --depth=1)
 (cd $CLONE_DIR && make c_api_android)
 
 # All android archs
