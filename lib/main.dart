@@ -1,7 +1,9 @@
 // ignore_for_file: public_member_api_docs
 
+import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i2p/flutter_i2p.dart';
 import 'package:p3p/p3p.dart';
@@ -10,16 +12,35 @@ import 'package:p3pch4t/pages/home.dart';
 import 'package:p3pch4t/pages/landing.dart';
 import 'package:p3pch4t/platform_interface.dart';
 import 'package:p3pch4t/service.dart';
+import 'package:p3pch4t/switch_platform.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:path/path.dart' as p;
 
 /// The globaly-used p3p object for the chat app.
-P3p p3p = getP3p(null); // use auto-detect path
+late P3p p3p; // = getP3p(null); // use auto-detect path
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await getAndroidNativeLibraryDirectory(forceRefresh: true);
-  p3p.initStore((await getApplicationDocumentsDirectory()).path);
+  p3p = switch (getPlatform()) {
+    OS.android => await getP3p(
+        p.join(
+          (await getAndroidNativeLibraryDirectory()).path,
+          'libp3pgo.so',
+        ),
+      ),
+    OS.linux => await getP3p(
+        '/home/user/go/src/git.mrcyjanek.net/p3pch4t/p3pgo/build/api_host.so',
+      ),
+    _ => throw UnimplementedError()
+  };
+  p3p.initStore(
+    p.join(
+      (await getApplicationDocumentsDirectory()).path,
+      kDebugMode.toString(),
+    ),
+  );
   if (p3p.showSetup()) {
     runApp(
       MyApp(
@@ -31,8 +52,7 @@ void main() async {
     );
     return;
   }
-  await startI2p();
-  p3p.setPrivateInfoEepsiteDomain((await i2p!.domainInfo('p3pch4tmain.dat'))!);
+  await softStartI2p();
   if (Platform.isAndroid) {
     await Permission.notification.request();
   }
@@ -64,4 +84,14 @@ class MyApp extends StatelessWidget {
       home: w,
     );
   }
+}
+
+Future<void> softStartI2p() async {
+  await startI2p();
+  Timer.periodic(const Duration(seconds: 1), (timer) async {
+    p3p.setPrivateInfoEepsiteDomain(
+      (await i2p!.domainInfo('p3pch4tmain.dat'))!,
+    );
+    timer.cancel();
+  });
 }

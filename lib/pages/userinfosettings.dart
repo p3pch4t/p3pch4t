@@ -28,15 +28,39 @@ class _UserInfoPageState extends State<UserInfoPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            TextField(
-              controller: endpointCtrl,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                label: Text('Endpoint'),
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: TextField(
+                controller: endpointCtrl,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  label: Text('Endpoint'),
+                ),
+                onChanged: (String value) {
+                  widget.userInfo.endpoint = value;
+                },
               ),
-              onChanged: (String value) {
-                widget.userInfo.endpoint = value;
-              },
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: SizedBox(
+                width: double.maxFinite,
+                child: ElevatedButton(
+                  onPressed: () {
+                    final result = widget.userInfo.forceSendIntroduceEvent();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          result
+                              ? 'Introduce event queued'
+                              : 'Unable to queue introduce event.',
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text('Force Introduce'),
+                ),
+              ),
             ),
           ],
         ),

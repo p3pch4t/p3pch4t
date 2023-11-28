@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:p3p/p3p.dart';
 import 'package:p3pch4t/main.dart';
+import 'package:p3pch4t/pages/duipage.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
@@ -20,7 +21,7 @@ class AddUserPage extends StatefulWidget {
 class _AddUserPageState extends State<AddUserPage> {
   UserInfo selfUi = p3p.getSelfInfo();
 
-  final TextEditingController pkCtrl = TextEditingController();
+  final TextEditingController urlCtrl = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -31,12 +32,12 @@ class _AddUserPageState extends State<AddUserPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SelectableText(selfUi.publicKey.fingerprint),
+            SelectableText(p3p.getSelfInfo().endpoint),
+            const Divider(),
             TextField(
-              controller: pkCtrl,
-              minLines: 1,
-              maxLines: 12,
+              controller: urlCtrl,
               decoration: const InputDecoration(
+                label: Text('Endpoint'),
                 border: OutlineInputBorder(),
               ),
             ),
@@ -44,35 +45,25 @@ class _AddUserPageState extends State<AddUserPage> {
               width: double.maxFinite,
               child: ElevatedButton(
                 onPressed: () async {
-                  final ui = p3p.addUserFromPublicKey(pkCtrl.text);
-                  if (ui == null) {
+                  final dui = p3p.getUserDetailsByURL(urlCtrl.text);
+                  if (dui == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Unable to reach given user.'),
+                      ),
+                    );
                     return;
                   }
                   if (!mounted) return;
-                  Navigator.of(context).pop();
+                  await Navigator.of(context).pushReplacement(
+                    MaterialPageRoute<void>(
+                      builder: (context) {
+                        return DiscoveredUserPage(dui: dui);
+                      },
+                    ),
+                  );
                 },
                 child: const Text('Add'),
-              ),
-            ),
-            URQR(text: selfUi.publicKey.armored),
-            const Text(
-              'After scanning one part of qr, click the code to move to '
-              'the next part',
-            ),
-            SizedBox(
-              width: double.maxFinite,
-              child: ElevatedButton.icon(
-                onPressed: scan,
-                icon: const Icon(Icons.camera),
-                label: const Text('Scan'),
-              ),
-            ),
-            const Divider(),
-            SelectableText(
-              selfUi.publicKey.armored,
-              style: const TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 7,
               ),
             ),
           ],
@@ -94,7 +85,7 @@ class _AddUserPageState extends State<AddUserPage> {
       total = int.parse(meta[1]);
       parts[int.parse(meta[0])] = list[1];
       setState(() {
-        pkCtrl.text = parts.join();
+        urlCtrl.text = parts.join();
       });
       var done = true;
       for (var i = 0; i < total; i++) {
