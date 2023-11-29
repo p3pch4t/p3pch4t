@@ -31,7 +31,10 @@ void main() async {
         ),
       ),
     OS.linux => await getP3p(
-        '/home/user/go/src/git.mrcyjanek.net/p3pch4t/p3pgo/build/api_host.so',
+        File('/home/user/go/src/git.mrcyjanek.net/p3pch4t/p3pgo/build/api_host.so')
+                .existsSync()
+            ? '/home/user/go/src/git.mrcyjanek.net/p3pch4t/p3pgo/build/api_host.so'
+            : 'lib/libp3pgo.so',
       ),
     _ => throw UnimplementedError()
   };

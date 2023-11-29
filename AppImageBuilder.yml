@@ -1,0 +1,55 @@
+# appimage-builder recipe see https://appimage-builder.readthedocs.io for details
+version: 1
+script:
+ - rm -rf AppDir || true
+ - cp -a build/linux/x64/release/bundle AppDir
+ - mkdir -p AppDir/usr/share/icons/hicolor/64x64/apps/
+ - mv AppDir/lib/ AppDir/usr/
+# - cp flutter-mark-square-64.png AppDir/usr/share/icons/hicolor/64x64/apps/
+AppDir:
+  path: build/linux/x64/release/bundle
+  app_info:
+    id: net.mrcyjanek.p3pch4t
+    name: P3pch4t
+    icon: application-vnd.appimage
+    version: 0.0.0.0-0000000-0000000-0000000-development
+    exec: p3pch4t
+    exec_args: $@
+  apt:
+    arch:
+    - amd64
+    allow_unauthenticated: true
+    sources:
+    - sourceline: deb https://deb.debian.org/debian bookworm main contrib non-free-firmware
+    - sourceline: deb https://deb.debian.org/debian-security bookworm-security main contrib non-free-firmware
+    include:
+    - libgtk-3-0
+    - libc6
+    - libwayland-cursor0
+  files:
+    include: []
+    exclude:
+    - usr/share/man
+    - usr/share/doc/*/README.*
+    - usr/share/doc/*/changelog.*
+    - usr/share/doc/*/NEWS.*
+    - usr/share/doc/*/TODO.*
+  # test:
+  #   fedora-30:
+  #     image: appimagecrafters/tests-env:fedora-30
+  #     command: ./AppRun
+  #   debian-stable:
+  #     image: appimagecrafters/tests-env:debian-stable
+  #     command: ./AppRun
+  #   archlinux-latest:
+  #     image: appimagecrafters/tests-env:archlinux-latest
+  #     command: ./AppRun
+  #   centos-7:
+  #     image: appimagecrafters/tests-env:centos-7
+  #     command: ./AppRun
+  #   ubuntu-xenial:
+  #     image: appimagecrafters/tests-env:ubuntu-xenial
+  #     command: ./AppRun
+AppImage:
+  arch: x86_64
+  update-information: guess
