@@ -162,8 +162,7 @@ window.webxdc = {
         body: LinearProgressIndicator(value: progress),
       );
     }
-    if (file.downloadedSizeBytes != file.sizeBytes ||
-        file.downloadedSizeBytes == 0) {
+    if (!file.isDownloaded) {
       return FileView(
         file: file,
         roomFingerprint: roomFingerprint,

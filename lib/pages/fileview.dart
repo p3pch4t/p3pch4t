@@ -35,13 +35,13 @@ class _FileViewState extends State<FileView> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            if (file.downloadedSizeBytes != file.sizeBytes)
+            if (!file.isDownloaded)
               LinearProgressIndicator(
-                value: file.downloadedSizeBytes == 0 || file.sizeBytes == 0
+                value: file.file.lengthSync() == 0 || file.sizeBytes == 0
                     ? null
-                    : file.downloadedSizeBytes / file.sizeBytes + 1,
+                    : (file.file.lengthSync() + 1) / (file.sizeBytes + 1),
               ),
-            SelectableText(const JsonEncoder.withIndent('   ').convert(file)),
+            // SelectableText(const JsonEncoder.withIndent('   ').convert(file)),
             TextField(
               controller: pathCtrl,
               decoration: const InputDecoration(
@@ -51,11 +51,12 @@ class _FileViewState extends State<FileView> {
             SizedBox(
               width: double.maxFinite,
               child: OutlinedButton(
-                child: const Text('open (may not work)'),
+                child: const Text('open'),
                 onPressed: () async {
                   if (Platform.isAndroid) {
                     await Permission.manageExternalStorage.request().isGranted;
                   }
+                  print(file.localPath);
                   final result = await OpenFile.open(file.localPath);
                   if (kDebugMode) {
                     print(result.message);
@@ -67,8 +68,8 @@ class _FileViewState extends State<FileView> {
               title: const Text('Should sync'),
               value: file.shouldFetch,
               onChanged: (bool? value) async {
-                file.shouldFetch = value;
-                await saveElement();
+                //file.shouldFetch = value;
+                //await saveElement();
               },
             ),
             CheckboxListTile(

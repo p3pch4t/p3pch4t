@@ -92,7 +92,7 @@ class _WebxdcFileViewAndroidState extends State<WebxdcFileViewAndroid> {
           );
         }
         // append the update to update file.
-        final updateElm = await getUpdateElement();
+        final updateElm = getUpdateElement();
         if (updateElm == null) {
           // We don't have the .jsonp file - despite the fact that it was
           // created.
@@ -145,7 +145,7 @@ for (let i = 0; i < window.webxdc.setUpdateListenerList.length; i++) {
         final jBody = json.decode(p0.message) as Map<String, dynamic>;
         assert(jBody['listId'] is int, 'ListID is not a string');
         if (kDebugMode) print('p3p_native_setUpdateListener: ${p0.message}');
-        final updateElm = await getUpdateElement();
+        final updateElm = getUpdateElement();
         if (updateElm == null) {
           if (mounted) Navigator.of(context).pop();
           return;
@@ -228,10 +228,9 @@ window.webxdc.setUpdateListenerList[${(jBody["listId"] as int) - 1}]({
     );
   }
 
-  Future<FileStoreElement?> getUpdateElement() async {
-    final elms = p3p.getFileStoreElements(
-      widget.chatroom,
-    ); //await widget.chatroom.fileStore.getFileStoreElement(p3p!);
+  FileStoreElement? getUpdateElement() {
+    final elms = widget.chatroom.fileStore
+        .files; //await widget.chatroom.fileStore.getFileStoreElement(p3p!);
     final wpath = widget.webxdcFile.path;
     final desiredPath = p.normalize(
       (wpath.split(Platform.isWindows ? r'\' : '/')
@@ -245,21 +244,13 @@ window.webxdc.setUpdateListenerList[${(jBody["listId"] as int) - 1}]({
         updateElm = felm;
       }
     }
-    p3p.print(desiredPath);
-    p3p.print(updateElm?.path);
     if (updateElm == null) {
-      updateElm = p3p.putFileStoreElement(
+      updateElm = p3p.createFileStoreElement(
         widget.chatroom,
-        localFile: null,
-        localFileSha512sum: null,
-        sizeBytes: 0,
+        localFilePath: '',
         fileInChatPath: desiredPath,
-        uuid: null,
-        shouldFetch: true,
       );
       p3p.updateFileContent(updateElm);
-      p3p.print(desiredPath);
-      p3p.print(updateElm.path);
       return updateElm;
     }
     return updateElm;

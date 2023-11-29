@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:p3p/p3p.dart';
 import 'package:p3pch4t/main.dart';
+import 'package:p3pch4t/pages/filemanager.dart';
 import 'package:p3pch4t/pages/widgets/richtext.dart';
 
 class ChatPage extends StatefulWidget {
@@ -36,18 +37,17 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    // final rmsgs = msgs.reversed.toList();
     return Scaffold(
       appBar: AppBar(
         title: Text(userInfo.name),
       ),
-      // endDrawer: Drawer(
-      //   child: FileManager(
-      //     fileStore: userInfo.fileStore,
-      //     roomFingerprint: userInfo.publicKey.fingerprint,
-      //     chatroom: userInfo,
-      //   ),
-      // ),
+      endDrawer: Drawer(
+        child: FileManager(
+          fileStore: userInfo.fileStore,
+          roomFingerprint: userInfo.publicKey.fingerprint,
+          chatroom: userInfo,
+        ),
+      ),
       body: Column(
         children: [
           Expanded(

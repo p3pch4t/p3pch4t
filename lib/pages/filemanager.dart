@@ -41,8 +41,8 @@ class _FileManagerState extends State<FileManager> {
     super.initState();
   }
 
-  Future<void> loadFiles() async {
-    final newFiles = p3p.getFileStoreElements(chatroom);
+  void loadFiles() {
+    final newFiles = chatroom.fileStore.files;
     setState(() {
       files = newFiles;
     });
@@ -69,6 +69,11 @@ class _FileManagerState extends State<FileManager> {
         .where((elm) => kDebugMode || !p.basename(elm.path).startsWith('.'))
         .where((elm) => !elm.isDeleted)
         .toList();
+    // final inScopeFiles = inScopeAll
+    //     .toSet()
+    //     .toList()
+    //     .where((elm) => !elm.path.substring(path.length + 1).contains('/'))
+    //     .toList();
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -96,22 +101,15 @@ class _FileManagerState extends State<FileManager> {
             final dateSlug = '${today.year}-'
                 '${today.month.toString().padLeft(2, '0')}-'
                 '${today.day.toString().padLeft(2, '0')}';
-            p3p.putFileStoreElement(
+            p3p.createFileStoreElement(
               chatroom,
-              localFile: File(file.path!),
-              localFileSha512sum: '',
-              // localFileSha512sum: FileStoreElement.calcSha512Sum(
-              //   await File(file.path!).readAsBytes(),
-              // ),
-              sizeBytes: await File(file.path!).length(),
+              localFilePath: file.path!,
               fileInChatPath: '/Unsort/$dateSlug/${file.name}',
-              uuid: null,
-              shouldFetch: true,
             );
 
-            await loadFiles();
+            loadFiles();
           }
-          await loadFiles();
+          loadFiles();
         },
       ),
     );
@@ -138,7 +136,7 @@ class _FileManagerState extends State<FileManager> {
               ),
             ),
           );
-          await loadFiles();
+          loadFiles();
         },
         onTap: () async {
           await Navigator.of(context).push(
@@ -158,7 +156,7 @@ class _FileManagerState extends State<FileManager> {
               },
             ),
           );
-          await loadFiles();
+          loadFiles();
         },
       ),
     );
