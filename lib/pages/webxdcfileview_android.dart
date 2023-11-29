@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -103,18 +104,21 @@ class _WebxdcFileViewAndroidState extends State<WebxdcFileViewAndroid> {
         // For whatever reason I'd love to use microseconds, because idk
         // but I can't because JS.
         final timestamp = DateTime.now().millisecondsSinceEpoch;
-        await updateElm.file.writeAsString(
+        updateElm.file.writeAsStringSync(
           "\n$timestamp:${json.encode(jBodyUpdate["payload"])}",
           mode: FileMode.append,
           flush: true,
         );
 
-        p3p.updateFileContent(updateElm);
+        updateElm.updateFileContent();
         final jsPayload = '''
 for (let i = 0; i < window.webxdc.setUpdateListenerList.length; i++) {
   window.webxdc.setUpdateListenerList[i]({
     // NOTE: Is it possible to exploit this somehow?
     // talking about the dart side of things.
+    // UPDATE: talking about go part of things too
+    // I don't really care if it get's exploited in browser.
+    // I mean I do but it doesn't matter imo.
     // I'm sorry for you if you had to dig here from JS world.
     "payload": ${json.encode(jBodyUpdate["payload"])},
     "serial": $timestamp,
@@ -151,28 +155,39 @@ for (let i = 0; i < window.webxdc.setUpdateListenerList.length; i++) {
           return;
         }
         if (!updateElm.file.existsSync()) {
+          print("file doesn't exist.");
           updateElm.file.createSync(recursive: true);
         }
         if (updateElm.file.lengthSync() == 0) {
+          print('length is 0');
           return;
         }
         p3p.print('updateElm.file.length: ${updateElm.file.lengthSync()}');
         final lines = updateElm.file.readAsLinesSync();
-        final regexp = RegExp('/^[0-9]+:/gm');
+        var maxInt = 1;
+        for (final lineReversed in lines.reversed) {
+          final colonIndex = lineReversed.indexOf(':');
+          if (colonIndex == -1) continue;
+          final index = int.tryParse(lineReversed.substring(0, colonIndex));
+          if (index == null) continue;
+
+          maxInt = max(index, maxInt);
+        }
         for (var i = 0; i < lines.length; i++) {
-          final match = regexp.stringMatch(lines[i]);
-          if (match == null) continue;
-          final matchInt = match.replaceAll(':', '');
+          final colonIndex = lines[i].indexOf(':');
+          if (colonIndex == -1) continue;
+          final matchInt = int.tryParse(lines[i].substring(0, colonIndex));
+          if (matchInt == null) continue;
           try {
             final payload =
-                json.encode(json.decode(lines[i].substring(match.length)));
+                json.encode(json.decode(lines[i].substring(colonIndex + 1)));
             final jsPayload = '''
 console.log("setUpdateListener: hook id: $i");
 
 window.webxdc.setUpdateListenerList[${(jBody["listId"] as int) - 1}]({
   "payload": $payload,
   "serial": $matchInt,
-  "max_serial": $matchInt,
+  "max_serial": $maxInt,
   "info": null,
   "document": null,
   "summary": null,
@@ -245,13 +260,11 @@ window.webxdc.setUpdateListenerList[${(jBody["listId"] as int) - 1}]({
       }
     }
     if (updateElm == null) {
-      updateElm = p3p.createFileStoreElement(
+      return p3p.createFileStoreElement(
         widget.chatroom,
         localFilePath: '',
         fileInChatPath: desiredPath,
       );
-      p3p.updateFileContent(updateElm);
-      return updateElm;
     }
     return updateElm;
   }
