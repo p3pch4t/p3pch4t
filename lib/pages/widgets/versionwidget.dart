@@ -157,7 +157,7 @@ class _VersionWidgetState extends State<VersionWidget> {
                 onPressed: () {
                   launchUrl(
                     Uri.parse(
-                      'https://static.mrcyjanek.net/p3pch4t/latest/p3pch4t-release/android/${switch (getPlatform()) {
+                      'https://static.mrcyjanek.net/p3pch4t/latest/p3pch4t-release/${switch (getPlatform()) {
                         OS.android => "android",
                         OS.linux => "linux",
                         _ => "",
