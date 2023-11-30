@@ -43,7 +43,7 @@ class _VersionWidgetState extends State<VersionWidget> {
             'avoid when using the app - so once you finish working on the app '
             'please, use the official build.';
       });
-      // return;
+      return;
     }
 
     if (isFirstTime) {
@@ -75,17 +75,17 @@ class _VersionWidgetState extends State<VersionWidget> {
       );
       //'https://static.mrcyjanek.net/p3pch4t/latest/version.txt'),
 
-      if (version.data == P3PCH4T_VERSION) {
+      if (version.data?.trim() == P3PCH4T_VERSION.trim()) {
         return; // oki - we are on correct version
       }
       setState(
         () {
           infoString = 'New version if available!';
           extraInfo =
-              'New version is available: **$version**. You are currently '
-              'running on: $P3PCH4T_VERSION\nIt is important to use latest '
-              'version to ensure network stability.\n (Especially during beta) '
-              '.';
+              'New version is available: **${version.data?.trim()}**. You are '
+              ' currently running on: **${P3PCH4T_VERSION.trim()}**\nIt is '
+              'important to use latest version to ensure network stability. '
+              '(Especially during beta) .';
         },
       );
     } catch (e) {
@@ -157,7 +157,7 @@ class _VersionWidgetState extends State<VersionWidget> {
                 onPressed: () {
                   launchUrl(
                     Uri.parse(
-                      'https://static.mrcyjanek.net/p3pch4t/latest/${switch (getPlatform()) {
+                      'https://static.mrcyjanek.net/p3pch4t/latest/p3pch4t-release/android/${switch (getPlatform()) {
                         OS.android => "android",
                         OS.linux => "linux",
                         _ => "",
@@ -175,7 +175,7 @@ class _VersionWidgetState extends State<VersionWidget> {
                 onPressed: () {
                   launchUrl(
                     Uri.parse(
-                      'http://n6hg3o7vh25bftxxqnspfp7li2rh4wkhbqsd65e5sow7hr4gulrq.b32.i2p/p3pch4t/latest/${switch (getPlatform()) {
+                      'http://n6hg3o7vh25bftxxqnspfp7li2rh4wkhbqsd65e5sow7hr4gulrq.b32.i2p/p3pch4t/latest/p3pch4t-release/${switch (getPlatform()) {
                         OS.android => "android",
                         OS.linux => "linux",
                         _ => "",

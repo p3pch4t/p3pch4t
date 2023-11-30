@@ -1,5 +1,7 @@
 // ignore_for_file: public_member_api_docs
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:p3p/p3p.dart';
 import 'package:p3pch4t/main.dart';
@@ -23,10 +25,11 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     loadUsers();
+    refreshUsersTimer();
     super.initState();
   }
 
-  Future<void> loadUsers() async {
+  void loadUsers() {
     final value = p3p.getAllUserInfo();
     setState(() {
       users = value;
@@ -97,7 +100,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                       );
-                      await loadUsers();
+                      loadUsers();
                     },
                     onLongPress: () async {
                       if (!mounted) return;
@@ -125,9 +128,19 @@ class _HomePageState extends State<HomePage> {
               builder: (context) => const AddUserPage(),
             ),
           );
-          await loadUsers();
+          loadUsers();
         },
       ),
     );
+  }
+
+  void refreshUsersTimer() {
+    Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      loadUsers();
+    });
   }
 }

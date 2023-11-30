@@ -1,5 +1,7 @@
 // ignore_for_file: public_member_api_docs
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:p3p/p3p.dart';
 import 'package:p3pch4t/main.dart';
@@ -27,11 +29,21 @@ class _ChatPageState extends State<ChatPage> {
     super.initState();
   }
 
-  Future<void> loadMessages() async {
+  void loadMessages() {
     final newMsgs = p3p.getMessages(userInfo);
     if (!mounted) return;
     setState(() {
       msgs = newMsgs;
+    });
+  }
+
+  void scheduleLoadMessage() {
+    Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      loadMessages();
     });
   }
 
@@ -90,7 +102,7 @@ class _ChatPageState extends State<ChatPage> {
                   userInfo,
                   msgCtrl.text,
                 );
-                await loadMessages();
+                loadMessages();
                 msgCtrl.clear();
               },
               controller: msgCtrl,
