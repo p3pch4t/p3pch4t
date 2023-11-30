@@ -23,6 +23,7 @@ late P3p p3p; // = getP3p(null); // use auto-detect path
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await getAndroidNativeLibraryDirectory(forceRefresh: true);
+  print('loading p3p');
   p3p = switch (getPlatform()) {
     OS.android => await getP3p(
         p.join(
@@ -38,12 +39,10 @@ void main() async {
       ),
     _ => throw UnimplementedError()
   };
-  p3p.initStore(
-    p.join(
-      (await getApplicationDocumentsDirectory()).path,
-      kDebugMode.toString(),
-    ),
+  final dirPath = p.join(
+    (await getApplicationDocumentsDirectory()).path,
   );
+  p3p.initStore(dirPath);
   if (p3p.showSetup()) {
     runApp(
       MyApp(

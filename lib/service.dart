@@ -217,6 +217,7 @@ Future<void> startI2p() async {
 
   final filestore = p.join(appDocumentsDir.path, 'p3pch4t');
   i2p = I2p(
+    addHttpProxy: true,
     storePathString: p.join(filestore, 'i2pd-data'),
     tunnels: [
       I2pdHttpTunnel(

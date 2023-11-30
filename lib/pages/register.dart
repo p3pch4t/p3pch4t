@@ -34,15 +34,16 @@ class _RegisterPageState extends State<RegisterPage> {
                 ],
               ),
             ),
-            const Divider(),
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: Column(
-                children: [
-                  ...reachableSelect(),
-                ],
+            if (kDebugMode) const Divider(),
+            if (kDebugMode)
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                  children: [
+                    ...reachableSelect(),
+                  ],
+                ),
               ),
-            ),
 
             const Divider(),
             // key size (4096, 2048, 1024)

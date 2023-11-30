@@ -3,8 +3,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart' as dio;
 import 'package:p3pch4t/consts.dart';
+import 'package:p3pch4t/service.dart';
 import 'package:p3pch4t/switch_platform.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -17,10 +18,14 @@ class VersionWidget extends StatefulWidget {
   State<VersionWidget> createState() => _VersionWidgetState();
 }
 
+bool isFirstTime = true;
+
 class _VersionWidgetState extends State<VersionWidget> {
   String? infoString;
   String? extraInfo;
   late Color color = Theme.of(context).cardColor;
+
+  bool showRefresh = false;
 
   @override
   void initState() {
@@ -38,7 +43,12 @@ class _VersionWidgetState extends State<VersionWidget> {
             'avoid when using the app - so once you finish working on the app '
             'please, use the official build.';
       });
-      return;
+      // return;
+    }
+
+    if (isFirstTime) {
+      isFirstTime = false;
+      await Future<void>.delayed(const Duration(seconds: 30));
     }
 
     if (P3PCH4T_VERSION.contains('-dirty')) {
@@ -60,10 +70,12 @@ class _VersionWidgetState extends State<VersionWidget> {
     }
 
     try {
-      final version = await http.read(
-        Uri.parse('https://p3p.mrcyjanek.net/archive/latest/version.txt'),
+      final version = await i2p!.dio!.get<String>(
+        'http://n6hg3o7vh25bftxxqnspfp7li2rh4wkhbqsd65e5sow7hr4gulrq.b32.i2p/p3pch4t/latest/version.txt',
       );
-      if (version == P3PCH4T_VERSION) {
+      //'https://static.mrcyjanek.net/p3pch4t/latest/version.txt'),
+
+      if (version.data == P3PCH4T_VERSION) {
         return; // oki - we are on correct version
       }
       setState(
@@ -85,6 +97,7 @@ class _VersionWidgetState extends State<VersionWidget> {
             'and as a consequence update server got migrated. In that case '
             'you chould use the button below to update\n'
             '\n\n---- error ----\n\n$e';
+        showRefresh = true;
         color = Theme.of(context).colorScheme.errorContainer;
       });
     }
@@ -120,22 +133,61 @@ class _VersionWidgetState extends State<VersionWidget> {
                 onPressed: _showExtraDialog,
                 icon: const Icon(Icons.info),
               ),
-        subtitle: SizedBox(
-          width: double.maxFinite,
-          child: OutlinedButton(
-            onPressed: () {
-              launchUrl(
-                Uri.parse(
-                  'https://p3p.mrcyjanek.net/archive/latest/${switch (getPlatform()) {
-                    OS.android => "android",
-                    _ => "",
-                  }}',
+        subtitle: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (showRefresh)
+              SizedBox(
+                width: double.maxFinite,
+                child: OutlinedButton(
+                  onPressed: () {
+                    loadVersion();
+                    setState(() {
+                      infoString = null;
+                      extraInfo = null;
+                      showRefresh = false;
+                    });
+                  },
+                  child: const Text('Try again'),
                 ),
-                mode: LaunchMode.externalApplication,
-              );
-            },
-            child: const Text('Update'),
-          ),
+              ),
+            SizedBox(
+              width: double.maxFinite,
+              child: ElevatedButton(
+                onPressed: () {
+                  launchUrl(
+                    Uri.parse(
+                      'https://static.mrcyjanek.net/p3pch4t/latest/${switch (getPlatform()) {
+                        OS.android => "android",
+                        OS.linux => "linux",
+                        _ => "",
+                      }}',
+                    ),
+                    mode: LaunchMode.externalApplication,
+                  );
+                },
+                child: const Text('Update (static.mrcyjanek.net)'),
+              ),
+            ),
+            SizedBox(
+              width: double.maxFinite,
+              child: ElevatedButton(
+                onPressed: () {
+                  launchUrl(
+                    Uri.parse(
+                      'http://n6hg3o7vh25bftxxqnspfp7li2rh4wkhbqsd65e5sow7hr4gulrq.b32.i2p/p3pch4t/latest/${switch (getPlatform()) {
+                        OS.android => "android",
+                        OS.linux => "linux",
+                        _ => "",
+                      }}',
+                    ),
+                    mode: LaunchMode.externalApplication,
+                  );
+                },
+                child: const Text('Update (i2p mirror)'),
+              ),
+            ),
+          ],
         ),
       ),
     );
