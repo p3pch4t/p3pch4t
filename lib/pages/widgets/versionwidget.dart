@@ -71,7 +71,7 @@ class _VersionWidgetState extends State<VersionWidget> {
 
     try {
       final version = await i2p!.dio!.get<String>(
-        'http://n6hg3o7vh25bftxxqnspfp7li2rh4wkhbqsd65e5sow7hr4gulrq.b32.i2p/p3pch4t/latest/version.txt',
+        '$STATIC_MRCYJANEK_NET_I2P/p3pch4t/latest/version.txt',
       );
       //'https://static.mrcyjanek.net/p3pch4t/latest/version.txt'),
 
@@ -175,7 +175,7 @@ class _VersionWidgetState extends State<VersionWidget> {
                 onPressed: () {
                   launchUrl(
                     Uri.parse(
-                      'http://n6hg3o7vh25bftxxqnspfp7li2rh4wkhbqsd65e5sow7hr4gulrq.b32.i2p/p3pch4t/latest/p3pch4t-release/${switch (getPlatform()) {
+                      '$STATIC_MRCYJANEK_NET_I2P/p3pch4t/latest/p3pch4t-release/${switch (getPlatform()) {
                         OS.android => "android",
                         OS.linux => "linux",
                         _ => "",

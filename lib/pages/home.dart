@@ -10,6 +10,7 @@ import 'package:p3pch4t/pages/chatpage.dart';
 import 'package:p3pch4t/pages/groupsmanager.dart';
 import 'package:p3pch4t/pages/settings.dart';
 import 'package:p3pch4t/pages/userinfosettings.dart';
+import 'package:p3pch4t/pages/webxdcstore/home.dart';
 import 'package:p3pch4t/pages/widgets/versionwidget.dart';
 
 class HomePage extends StatefulWidget {
@@ -67,17 +68,29 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             ListTile(
-              title: const Text('Groups'),
-              leading: const Icon(Icons.people),
+              title: const Text('App Store'),
+              leading: const Icon(Icons.store),
               onTap: () {
                 Navigator.of(context).pop();
                 Navigator.of(context).push(
                   MaterialPageRoute<void>(
-                    builder: (context) => const GroupsManager(),
+                    builder: (context) => const WebXDCStore(),
                   ),
                 );
               },
             ),
+            // ListTile(
+            //   title: const Text('Groups'),
+            //   leading: const Icon(Icons.people),
+            //   onTap: () {
+            //     Navigator.of(context).pop();
+            //     Navigator.of(context).push(
+            //       MaterialPageRoute<void>(
+            //         builder: (context) => const GroupsManager(),
+            //       ),
+            //     );
+            //   },
+            // ),
           ],
         ),
       ),
