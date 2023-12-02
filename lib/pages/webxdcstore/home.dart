@@ -11,8 +11,8 @@ import 'package:p3pch4t/pages/webxdcstore/data_model.dart';
 import 'package:p3pch4t/pages/webxdcstore/details_page.dart';
 import 'package:p3pch4t/pages/widgets/cachednetworkimage.dart';
 import 'package:p3pch4t/service.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 const storeurl = '$STATIC_MRCYJANEK_NET_I2P/webxdc';
 
@@ -45,7 +45,7 @@ class _WebXDCStoreState extends State<WebXDCStore> {
       });
       if (DateTime.now()
           .subtract(const Duration(hours: 24))
-          .isAfter(cachedJsonFile.lastModifiedSync())) {
+          .isBefore(cachedJsonFile.lastModifiedSync())) {
         return;
       }
       p3p.print('refreshing file');
@@ -55,10 +55,19 @@ class _WebXDCStoreState extends State<WebXDCStore> {
     refreshData(cachedJsonFile.path);
   }
 
+  String? error;
+
   void refreshData(String savePath) {
-    print('refreshData: downloading');
-    i2p!.dio!.download('$storeurl/meta.json', savePath);
-    print('refreshData: downloading done');
+    p3p.print('refreshData: downloading');
+    try {
+      i2p!.dio!.download('$storeurl/meta.json', savePath);
+      File(savePath).setLastModifiedSync(DateTime.now());
+    } catch (e) {
+      setState(() {
+        error = e.toString();
+      });
+    }
+    p3p.print('refreshData: downloading done');
     setState(() {
       store = WebXDCStoreMetaJSON.fromJson(
         json.decode(File(savePath).readAsStringSync()) as Map<String, dynamic>,
@@ -68,6 +77,36 @@ class _WebXDCStoreState extends State<WebXDCStore> {
 
   @override
   Widget build(BuildContext context) {
+    if (error != null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('WebXDC store'),
+        ),
+        body: Stack(
+          children: [
+            const LinearProgressIndicator(),
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: SelectableText(
+                  error ?? '',
+                ),
+              ),
+            ),
+          ],
+        ),
+        bottomNavigationBar: store == null
+            ? null
+            : ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    error = null;
+                  });
+                },
+                child: const Text('Load cached version.'),
+              ),
+      );
+    }
     if (store == null) {
       return Scaffold(
         appBar: AppBar(

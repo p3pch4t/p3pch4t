@@ -1,16 +1,11 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:p3pch4t/consts.dart';
-import 'package:p3pch4t/main.dart';
 import 'package:p3pch4t/pages/webxdcstore/data_model.dart';
 import 'package:p3pch4t/pages/webxdcstore/home.dart';
 import 'package:p3pch4t/pages/webxdcstore/read_more_text.dart';
+import 'package:p3pch4t/pages/webxdcstore/webxdc_download.dart';
 import 'package:p3pch4t/pages/widgets/cachednetworkimage.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
 
 class WebXDCDetailsPage extends StatefulWidget {
   const WebXDCDetailsPage({required this.app, super.key});
@@ -36,7 +31,8 @@ class _WebXDCDetailsPageState extends State<WebXDCDetailsPage> {
               child: SizedBox(
                 width: double.maxFinite,
                 child: I2pCachedNetworkImage(
-                    imageUrl: '$storeurl/${widget.app.banner}'),
+                  imageUrl: '$storeurl/${widget.app.banner}',
+                ),
               ),
             ),
             Padding(
@@ -72,7 +68,13 @@ class _WebXDCDetailsPageState extends State<WebXDCDetailsPage> {
     );
   }
 
-  void download() {}
+  void download() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) => WebXDCDownloadPage(app: widget.app),
+      ),
+    );
+  }
 
   void updateProgress() {
     Timer.periodic(const Duration(milliseconds: 111), (timer) {

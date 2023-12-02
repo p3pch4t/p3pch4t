@@ -29,8 +29,7 @@ class ReadMoreText extends StatefulWidget {
         showCursor = null,
         cursorWidth = null,
         cursorColor = null,
-        cursorRadius = null,
-        toolbarOptions = null;
+        cursorRadius = null;
 
   /// Show a read more text widget with the use of [SelectableText] instead
   /// of normal [Text] widget.
@@ -57,7 +56,6 @@ class ReadMoreText extends StatefulWidget {
     this.cursorRadius,
     this.cursorWidth,
     this.showCursor,
-    this.toolbarOptions,
     this.cursorHeight,
   }) : _isSelectable = true;
 
@@ -124,7 +122,6 @@ class ReadMoreText extends StatefulWidget {
   final Radius? cursorRadius;
 
   /// The toolbar options of the selection area.
-  final ToolbarOptions? toolbarOptions;
   final bool _isSelectable;
 
   /// The key for the content text.
@@ -171,7 +168,6 @@ class _ReadMoreTextState extends State<ReadMoreText> {
                   cursorHeight: widget.cursorHeight,
                   cursorRadius: widget.cursorRadius,
                   showCursor: widget.showCursor ?? false,
-                  toolbarOptions: widget.toolbarOptions,
                   scrollPhysics: const NeverScrollableScrollPhysics(),
                 )
               else

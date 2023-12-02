@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs
 
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
@@ -117,13 +118,18 @@ window.webxdc = {
     p3p_native_sendToChat(JSON.stringify(message));
   },
   importFiles: function (filter) {}, // TODO: implement
-  selfAddr: `${si.publicKey.armored /* TODO: make this code atob btoa */}`,
+  selfAddr: atob(`${base64Encode(utf8.encode(si.publicKey.armored))}`),
   selfName: `${si.name}`,
   // END OF OFFICIAL IMPLEMENTATION, p3p extensions below
-
   // END OF IMPLEMENTATION, internal use below
   setUpdateListenerList: [],
   sleep: (delay) => new Promise((resolve) => setTimeout(resolve, delay))
+  selfAddr_legacy: `${si.publicKey.armored}`,
+}
+if (window.webxdc.selfAddr != window.webxdc.selfAddr_legacy) {
+  alert("selfAddr != selfAddr_legacy");
+  alert(window.webxdc.selfAddr);
+  alert(window.webxdc.selfAddr_legacy);
 }
 ''',
           headers: {'Content-Type': 'application/javascript'},

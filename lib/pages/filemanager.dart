@@ -1,7 +1,5 @@
 // ignore_for_file: public_member_api_docs
 
-import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -92,6 +90,7 @@ class _FileManagerState extends State<FileManager> {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.upload),
         onPressed: () async {
           final result = await FilePicker.platform.pickFiles();
           if (result == null) return;
@@ -106,7 +105,6 @@ class _FileManagerState extends State<FileManager> {
               localFilePath: file.path!,
               fileInChatPath: '/Unsort/$dateSlug/${file.name}',
             );
-
             loadFiles();
           }
           loadFiles();

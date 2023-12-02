@@ -3,7 +3,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:dio/dio.dart' as dio;
 import 'package:p3pch4t/consts.dart';
 import 'package:p3pch4t/service.dart';
 import 'package:p3pch4t/switch_platform.dart';

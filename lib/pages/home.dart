@@ -7,7 +7,6 @@ import 'package:p3p/p3p.dart';
 import 'package:p3pch4t/main.dart';
 import 'package:p3pch4t/pages/adduser.dart';
 import 'package:p3pch4t/pages/chatpage.dart';
-import 'package:p3pch4t/pages/groupsmanager.dart';
 import 'package:p3pch4t/pages/settings.dart';
 import 'package:p3pch4t/pages/userinfosettings.dart';
 import 'package:p3pch4t/pages/webxdcstore/home.dart';

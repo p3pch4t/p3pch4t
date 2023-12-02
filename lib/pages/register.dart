@@ -89,7 +89,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   await Permission.notification.request();
                 }
                 // await initializeService();
-                final selfUser = p3p.createSelfInfo(
+                p3p.createSelfInfo(
                   usernameCtrl.text,
                   emailCtrl.text,
                   keySize,
@@ -155,8 +155,8 @@ class _RegisterPageState extends State<RegisterPage> {
           }),
           title: const Text('P2P i2p transport'),
           subtitle: const Text(
-            'Use i2p peer-to-peer network to contact other peers it may increase '
-            'battery usage significantly.',
+            'Use i2p peer-to-peer network to contact other peers it may '
+            'increase battery usage significantly.',
           ),
         ),
     ];

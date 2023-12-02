@@ -119,6 +119,10 @@ for (let i = 0; i < window.webxdc.setUpdateListenerList.length; i++) {
     // UPDATE: talking about go part of things too
     // I don't really care if it get's exploited in browser.
     // I mean I do but it doesn't matter imo.
+    // UPDATE2: Well I do care actually, turns out chromium isn't that secure
+    // I'll most likely migrate to gecko but... not now.
+    // For now let's follow DeltaChat's moves.
+    // ---
     // I'm sorry for you if you had to dig here from JS world.
     "payload": ${json.encode(jBodyUpdate["payload"])},
     "serial": $timestamp,
@@ -155,11 +159,11 @@ for (let i = 0; i < window.webxdc.setUpdateListenerList.length; i++) {
           return;
         }
         if (!updateElm.file.existsSync()) {
-          print("file doesn't exist.");
+          p3p.print("file doesn't exist.");
           updateElm.file.createSync(recursive: true);
         }
         if (updateElm.file.lengthSync() == 0) {
-          print('length is 0');
+          p3p.print('length is 0');
           return;
         }
         p3p.print('updateElm.file.length: ${updateElm.file.lengthSync()}');

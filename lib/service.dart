@@ -27,9 +27,9 @@ import 'dart:io';
 import 'package:dart_i2p/dart_i2p.dart';
 import 'package:p3pch4t/platform_interface.dart';
 import 'package:p3pch4t/switch_platform.dart';
+import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:path/path.dart' as p;
 // const notificationChannelId = 'p3pch4t_service';
 // const notificationId = 777;
 

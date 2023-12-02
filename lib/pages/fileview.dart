@@ -1,6 +1,5 @@
 // ignore_for_file: public_member_api_docs
 
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -41,7 +40,7 @@ class _FileViewState extends State<FileView> {
                     ? null
                     : (file.file.lengthSync() + 1) / (file.sizeBytes + 1),
               ),
-            // SelectableText(const JsonEncoder.withIndent('   ').convert(file)),
+            //SelectableText(const JsonEncoder.withIndent('   ').convert(file)),
             TextField(
               controller: pathCtrl,
               decoration: const InputDecoration(
@@ -56,7 +55,6 @@ class _FileViewState extends State<FileView> {
                   if (Platform.isAndroid) {
                     await Permission.manageExternalStorage.request().isGranted;
                   }
-                  print(file.localPath);
                   final result = await OpenFile.open(file.localPath);
                   if (kDebugMode) {
                     print(result.message);

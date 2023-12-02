@@ -3,7 +3,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i2p/flutter_i2p.dart';
 import 'package:p3p/p3p.dart';
@@ -13,9 +12,9 @@ import 'package:p3pch4t/pages/landing.dart';
 import 'package:p3pch4t/platform_interface.dart';
 import 'package:p3pch4t/service.dart';
 import 'package:p3pch4t/switch_platform.dart';
+import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:path/path.dart' as p;
 
 /// The globaly-used p3p object for the chat app.
 late P3p p3p; // = getP3p(null); // use auto-detect path
@@ -23,7 +22,6 @@ late P3p p3p; // = getP3p(null); // use auto-detect path
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await getAndroidNativeLibraryDirectory(forceRefresh: true);
-  print('loading p3p');
   p3p = switch (getPlatform()) {
     OS.android => await getP3p(
         p.join(

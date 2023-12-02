@@ -1,12 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
-import 'package:p3pch4t/main.dart';
-import 'package:p3pch4t/service.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:crypto/crypto.dart';
+import 'package:flutter/material.dart';
+import 'package:p3pch4t/service.dart';
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 String? _cacheDir;
 
@@ -15,6 +14,7 @@ class I2pCachedNetworkImage extends StatefulWidget {
   final String imageUrl;
 
   @override
+  // ignore: library_private_types_in_public_api
   _I2pCachedNetworkImageState createState() => _I2pCachedNetworkImageState();
 }
 
@@ -50,18 +50,26 @@ class _I2pCachedNetworkImageState extends State<I2pCachedNetworkImage> {
 
   double? progress;
 
+  String? error;
+
   Future<void> download() async {
     if (localFile?.existsSync() ?? false == true) return;
-    print('downloading');
-    await i2p!.dio!.download(
-      widget.imageUrl,
-      localFile!.path,
-      onReceiveProgress: (count, total) {
-        setState(() {
-          progress = count / total;
-        });
-      },
-    );
+    try {
+      await i2p!.dio!.download(
+        widget.imageUrl,
+        localFile!.path,
+        onReceiveProgress: (count, total) {
+          setState(() {
+            progress = count / total;
+          });
+        },
+      );
+    } catch (e) {
+      setState(() {
+        error = e.toString();
+      });
+      return;
+    }
     setState(() {
       progress = 1;
     });
@@ -70,6 +78,11 @@ class _I2pCachedNetworkImageState extends State<I2pCachedNetworkImage> {
 
   @override
   Widget build(BuildContext context) {
+    if (error != null) {
+      return Center(
+        child: SelectableText(error ?? ''),
+      );
+    }
     if (localFile == null || progress != 1) {
       return Center(
         child: CircularProgressIndicator(
