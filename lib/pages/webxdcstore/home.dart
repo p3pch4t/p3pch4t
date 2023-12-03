@@ -49,18 +49,18 @@ class _WebXDCStoreState extends State<WebXDCStore> {
         return;
       }
       p3p.print('refreshing file');
-      refreshData(cachedJsonFile.path);
+      await refreshData(cachedJsonFile.path);
       return;
     }
-    refreshData(cachedJsonFile.path);
+    await refreshData(cachedJsonFile.path);
   }
 
   String? error;
 
-  void refreshData(String savePath) {
+  Future<void> refreshData(String savePath) async {
     p3p.print('refreshData: downloading');
     try {
-      i2p!.dio!.download('$storeurl/meta.json', savePath);
+      await i2p!.dio!.download('$storeurl/meta.json', savePath);
       File(savePath).setLastModifiedSync(DateTime.now());
     } catch (e) {
       setState(() {
