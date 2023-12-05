@@ -66,6 +66,7 @@ class _WebXDCStoreState extends State<WebXDCStore> {
       setState(() {
         error = e.toString();
       });
+      return;
     }
     p3p.print('refreshData: downloading done');
     setState(() {
@@ -84,7 +85,7 @@ class _WebXDCStoreState extends State<WebXDCStore> {
         ),
         body: Stack(
           children: [
-            const LinearProgressIndicator(),
+            if (error == null) const LinearProgressIndicator(),
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(32),
