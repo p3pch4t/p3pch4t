@@ -123,7 +123,7 @@ window.webxdc = {
   // END OF OFFICIAL IMPLEMENTATION, p3p extensions below
   // END OF IMPLEMENTATION, internal use below
   setUpdateListenerList: [],
-  sleep: (delay) => new Promise((resolve) => setTimeout(resolve, delay))
+  sleep: (delay) => new Promise((resolve) => setTimeout(resolve, delay)),
   selfAddr_legacy: `${si.publicKey.armored}`,
 }
 if (window.webxdc.selfAddr != window.webxdc.selfAddr_legacy) {
