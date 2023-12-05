@@ -39,6 +39,7 @@ void main() async {
   };
   final dirPath = p.join(
     (await getApplicationDocumentsDirectory()).path,
+    '.p3pch4t',
   );
   p3p.initStore(dirPath, '', '');
   if (p3p.showSetup()) {
