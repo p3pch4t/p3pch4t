@@ -97,6 +97,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 // await prefs.setBool('reachable.local', localEnabled);
                 // await prefs.setBool('reachable.relay', relayEnabled);
                 // await prefs.setBool('reachable.i2p', i2pEnabled);
+                await softStartI2p();
 
                 if (!mounted) return;
                 Navigator.of(context).pop();
