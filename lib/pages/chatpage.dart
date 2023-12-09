@@ -26,19 +26,21 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     loadMessages();
+    scheduleLoadMessage();
     super.initState();
   }
 
   void loadMessages() {
     final newMsgs = p3p.getMessages(userInfo);
     if (!mounted) return;
+    if (newMsgs.length == msgs.length) return;
     setState(() {
       msgs = newMsgs;
     });
   }
 
   void scheduleLoadMessage() {
-    Timer.periodic(const Duration(seconds: 5), (timer) {
+    Timer.periodic(const Duration(seconds: 1), (timer) {
       if (!mounted) {
         timer.cancel();
         return;
