@@ -7,6 +7,7 @@ import 'package:p3p/p3p.dart';
 import 'package:p3pch4t/main.dart';
 import 'package:p3pch4t/pages/adduser.dart';
 import 'package:p3pch4t/pages/chatpage.dart';
+import 'package:p3pch4t/pages/queuedevents.dart';
 import 'package:p3pch4t/pages/settings.dart';
 import 'package:p3pch4t/pages/userinfosettings.dart';
 import 'package:p3pch4t/pages/webxdcstore/home.dart';
@@ -74,6 +75,18 @@ class _HomePageState extends State<HomePage> {
                 Navigator.of(context).push(
                   MaterialPageRoute<void>(
                     builder: (context) => const WebXDCStore(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              title: const Text('Queued Events'),
+              leading: const Icon(Icons.event),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (context) => const QueuedEventsPage(),
                   ),
                 );
               },
