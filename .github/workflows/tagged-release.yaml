@@ -1,0 +1,51 @@
+name: Android Release
+run-name: Building Anonero for android
+on: 
+  push:
+    tags:
+      - '*'
+
+jobs:
+  android-apk-release:
+    runs-on: androidsdk-flutter
+    steps:
+      # - name: Prepare F-droid repo
+      #   run: |
+      #     mkdir /fdroidrepo \
+      #     && fdroid init
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Flutter pub get
+        run: |
+          cd ${{ gitea.workspace }} \
+          && flutter pub get
+      - name: make version
+        run: |
+          cd ${{ gitea.workspace }} \
+          && make version
+      - name: Build apk
+        continue-on-error: false
+        run: |
+          cd ${{ gitea.workspace }} \
+          && make apk
+      - name: flutter analyze
+        run: |
+          cd ${{ gitea.workspace }} \
+          && flutter analyze
+      - name: Create release
+        uses: akkuman/gitea-release-action@v1
+        with:
+          body: |
+            This is a **preview** release to be used by testers.
+            It was build from **${{ gitea.ref }}** commit `${{ gitea.sha }}`
+
+            ### SECURITY NOTICE
+
+            This build is signed using private key that is commited into the repository. You may prefer to download latest stable release from our download site
+            - [static.mrcyjanek.net](https://static.mrcyjanek.net/p3pch4t/latest/)
+            - [i2p mirror](http://n6hg3o7vh25bftxxqnspfp7li2rh4wkhbqsd65e5sow7hr4gulrq.b32.i2p/p3pch4t/latest/)
+
+            ### Release info
+            ${{ github.event.head_commit.message }}
+          files: |-
+            ${{ gitea.workspace }}build/app/outputs/flutter-apk/app-release.apk

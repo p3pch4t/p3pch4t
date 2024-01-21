@@ -20,10 +20,31 @@ class _QueuedEventsPageState extends State<QueuedEventsPage> {
         itemBuilder: (context, index) {
           final evt = queuedEvents[index];
           return Card(
-            child: ListTile(title: Text(evt.endpoint)),
+            child: ListTile(
+              title: Text(evt.endpoint),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (context) {
+                      return const QueuedEventPage();
+                    },
+                  ),
+                );
+              },
+            ),
           );
         },
       ),
     );
+  }
+}
+
+class QueuedEventPage extends StatelessWidget {
+  const QueuedEventPage({super.key, this.queueEvent});
+  final dynamic queueEvent;
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold();
   }
 }

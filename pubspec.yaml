@@ -8,46 +8,47 @@ environment:
   sdk: '>=3.0.5 <4.0.0'
 
 dependencies:
-  archive: ^3.3.7
-  args: ^2.4.2
-  async: ^2.11.0
-  convert: ^3.1.1
-  crypto: ^3.0.3
-  cupertino_icons: ^1.0.2
+  archive: 3.3.7
+  args: 2.4.2
+  async: 2.11.0
+  convert: 3.1.1
+  crypto: 3.0.3
   dart_i2p:
-    path: ../dart_i2p
-  dart_pg: ^1.1.5
-  file_picker: ^6.1.1
+    hosted: https://git.mrcyjanek.net/api/packages/p3pch4t/pub/
+    version: 1.0.0+20
+  dart_pg: 1.1.5
+  file_picker: 6.1.1
   flutter:
     sdk: flutter
-  flutter_background_service: ^5.0.4
-  flutter_background_service_android: ^6.0.1
+  flutter_background_service: 5.0.4
   flutter_i2p:
-    path: ../flutter_i2p
-  flutter_local_notifications: ^16.1.0
-  flutter_markdown: ^0.6.17+1
-  http: ^1.1.0
-  markdown: ^7.1.1
-  mime: ^1.0.4
+    hosted: https://git.mrcyjanek.net/api/packages/p3pch4t/pub/
+    version: 2.50.2+13
+  flutter_local_notifications: 16.1.0
+  flutter_markdown: 0.6.17+1
+  http: 1.1.0
+  markdown: 7.1.1
+  mime: 1.0.4
   open_file:
     git: https://github.com/p3pch4t/open_file.git
   p3p:
-    path: ../p3p.dart
-  path: ^1.8.3
-  path_provider: ^2.1.0
-  permission_handler: ^11.0.1
-  shared_preferences: ^2.2.0
-  shelf: ^1.4.1
-  sqlite3_flutter_libs: ^0.5.0
-  url_launcher: ^6.1.12
-  uuid: ^4.1.0
-  webview_flutter: ^4.2.2
+    hosted: https://git.mrcyjanek.net/api/packages/p3pch4t/pub/
+    version: 1.0.0+40
+  path: 1.8.3
+  path_provider: 2.1.0
+  permission_handler: 11.0.1
+  shared_preferences: 2.2.1
+  shelf: 1.4.1
+  sqlite3_flutter_libs: 0.5.19+1
+  url_launcher: 6.1.12
+  uuid: 4.1.0
+  webview_flutter: 4.2.2
 
 dev_dependencies:
-  flutter_lints: ^3.0.1
+  flutter_lints: 3.0.1
   flutter_test:
     sdk: flutter
-  very_good_analysis: ^5.0.0+1
+  very_good_analysis: 5.0.0+1
 
 flutter:
   uses-material-design: true 

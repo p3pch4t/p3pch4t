@@ -10,6 +10,14 @@ We have plenty of user-friendly messengers, and we have plenty of p2p messengers
 
 Currently p3pch4t is supported on Windows, Linux and Android, with minimal effort MacOS and iOS builds can be done. Main focus is towards compatibility on Linux and Android at this stage. Developer preview builds can be downloaded from [static.mrcyjanek.net](https://static.mrcyjanek.net/p3pch4t/) or [i2p mirror](http://n6hg3o7vh25bftxxqnspfp7li2rh4wkhbqsd65e5sow7hr4gulrq.b32.i2p/p3pch4t).
 
+## Security
+
+### Android
+
+NOTE: Release apks are signed by `android/debug-keystore.jks`. As long as the app is in `development` stage this is not going to change, I don't want to deal with installing/uninstalling the app because cache is gone, also people who try development preview builds most likely do not want to deal with that.
+
+That being said - builds that can be found in at [download page](https://static.mrcyjanek.net/p3pch4t/) and [i2p mirror](http://n6hg3o7vh25bftxxqnspfp7li2rh4wkhbqsd65e5sow7hr4gulrq.b32.i2p/p3pch4t) are signed using different key.
+
 ## Funding
 
 This project is funded through the [NGI0 Core Fund](https://nlnet.nl/zero), a fund established by [NLnet](https://nlnet.nl) with financial support from the European Commission's [Next Generation Internet](https://ngi.eu) program. Learn more at the [NLnet project page](https://nlnet.nl/project/p3pch4t).
