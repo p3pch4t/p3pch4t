@@ -38,7 +38,7 @@ dependencies:
     hosted: https://git.mrcyjanek.net/api/packages/p3pch4t/pub/
     version: 1.0.0+1
   path: 1.8.3
-  path_provider: 2.1.0
+  path_provider: 2.1.2
   permission_handler: 11.0.1
   shared_preferences: 2.2.1
   shelf: 1.4.1
