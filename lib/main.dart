@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dart_i2p/dart_i2p.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i2p/flutter_i2p.dart';
 import 'package:p3p/p3p.dart';
@@ -48,6 +49,9 @@ void main() async {
         w: await I2pdEnsure.checkAndRun(
           app: const LandingPage(),
           binPath: await getBinPath(),
+          requiredBinaries: [
+            I2pdBinaries.i2pd,
+          ],
         ),
       ),
     );

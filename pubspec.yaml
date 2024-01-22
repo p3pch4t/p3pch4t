@@ -15,7 +15,7 @@ dependencies:
   crypto: 3.0.3
   dart_i2p:
     hosted: https://git.mrcyjanek.net/api/packages/p3pch4t/pub/
-    version: 1.0.0+20
+    version: 1.0.0+24
   dart_pg: 1.1.5
   file_picker: 6.1.1
   flutter:
@@ -23,7 +23,7 @@ dependencies:
   flutter_background_service: 5.0.4
   flutter_i2p:
     hosted: https://git.mrcyjanek.net/api/packages/p3pch4t/pub/
-    version: 2.50.2+13
+    version: 2.50.2+14
   flutter_local_notifications: 16.1.0
   flutter_markdown: 0.6.17+1
   http: 1.1.0
@@ -34,6 +34,9 @@ dependencies:
   p3p:
     hosted: https://git.mrcyjanek.net/api/packages/p3pch4t/pub/
     version: 1.0.0+40
+  p3pgo_libs:
+    hosted: https://git.mrcyjanek.net/api/packages/p3pch4t/pub/
+    version: 1.0.0+1
   path: 1.8.3
   path_provider: 2.1.0
   permission_handler: 11.0.1

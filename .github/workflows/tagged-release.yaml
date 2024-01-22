@@ -48,4 +48,4 @@ jobs:
             ### Release info
             ${{ github.event.head_commit.message }}
           files: |-
-            ${{ gitea.workspace }}build/app/outputs/flutter-apk/app-release.apk
+            ${{ gitea.workspace }}/build/app/outputs/flutter-apk/app-release.apk

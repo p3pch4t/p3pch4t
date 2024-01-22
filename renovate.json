@@ -7,7 +7,8 @@
             "matchPackageNames": [
                 "dart_i2p",
                 "flutter_i2p",
-                "p3p"
+                "p3p",
+                "p3pgo_libs"
             ],
             "registryUrls": [
                 "https://git.mrcyjanek.net/api/packages/p3pch4t/pub/"
