@@ -1,0 +1,25 @@
+name: Windows Release
+run-name: Building P3pch4t for Windows
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  windows-exe-release:
+    runs-on: windows-msys2-build-full
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Flutter pub get
+        run: |
+          cd ${{ gitea.workspace }}
+          flutter pub get
+      - name: make version
+        run: |
+          cd ${{ gitea.workspace }}
+          make version_windows
+      - name: Build apk
+        continue-on-error: false
+        run: |
+          cd ${{ gitea.workspace }}
+          make exe

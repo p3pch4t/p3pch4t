@@ -1,5 +1,5 @@
 name: Android Release
-run-name: Building Anonero for android
+run-name: Building P3pch4t for android
 on: 
   push:
     tags:
@@ -9,10 +9,6 @@ jobs:
   android-apk-release:
     runs-on: androidsdk-flutter
     steps:
-      # - name: Prepare F-droid repo
-      #   run: |
-      #     mkdir /fdroidrepo \
-      #     && fdroid init
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Flutter pub get

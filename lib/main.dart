@@ -3,7 +3,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dart_i2p/dart_i2p.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i2p/flutter_i2p.dart';
 import 'package:p3p/p3p.dart';
@@ -12,7 +11,7 @@ import 'package:p3pch4t/pages/home.dart';
 import 'package:p3pch4t/pages/landing.dart';
 import 'package:p3pch4t/platform_interface.dart';
 import 'package:p3pch4t/service.dart';
-import 'package:p3pch4t/switch_platform.dart';
+import 'package:p3pch4t/utils/p3p.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -23,21 +22,8 @@ late P3p p3p; // = getP3p(null); // use auto-detect path
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await getAndroidNativeLibraryDirectory(forceRefresh: true);
-  p3p = switch (getPlatform()) {
-    OS.android => await getP3p(
-        p.join(
-          (await getAndroidNativeLibraryDirectory()).path,
-          'libp3pgo.so',
-        ),
-      ),
-    OS.linux => await getP3p(
-        File('/home/user/go/src/git.mrcyjanek.net/p3pch4t/p3pgo/build/api_host.so')
-                .existsSync()
-            ? '/home/user/go/src/git.mrcyjanek.net/p3pch4t/p3pgo/build/api_host.so'
-            : 'lib/libp3pgo.so',
-      ),
-    _ => throw UnimplementedError()
-  };
+  print('running in: ${Directory.current.absolute}');
+  p3p = await getPlatformP3p();
   final dirPath = p.join(
     (await getApplicationDocumentsDirectory()).path,
     '.p3pch4t',
@@ -49,9 +35,6 @@ void main() async {
         w: await I2pdEnsure.checkAndRun(
           app: const LandingPage(),
           binPath: await getBinPath(),
-          requiredBinaries: [
-            I2pdBinaries.i2pd,
-          ],
         ),
       ),
     );
