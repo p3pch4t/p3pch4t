@@ -14,7 +14,7 @@ class FileView extends StatefulWidget {
     required this.roomFingerprint,
     super.key,
   });
-  final FileStoreElement file;
+  final SharedFile file;
   final String roomFingerprint;
 
   @override
@@ -25,7 +25,7 @@ class _FileViewState extends State<FileView> {
   late final file = widget.file;
   late final roomFingerprint = widget.roomFingerprint;
 
-  late final pathCtrl = TextEditingController(text: file.path);
+  late final pathCtrl = TextEditingController(text: file.filePath);
 
   @override
   Widget build(BuildContext context) {
@@ -34,12 +34,6 @@ class _FileViewState extends State<FileView> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            if (!file.isDownloaded)
-              LinearProgressIndicator(
-                value: file.file.lengthSync() == 0 || file.sizeBytes == 0
-                    ? null
-                    : (file.file.lengthSync() + 1) / (file.sizeBytes + 1),
-              ),
             //SelectableText(const JsonEncoder.withIndent('   ').convert(file)),
             TextField(
               controller: pathCtrl,
@@ -55,28 +49,22 @@ class _FileViewState extends State<FileView> {
                   if (Platform.isAndroid) {
                     await Permission.manageExternalStorage.request().isGranted;
                   }
-                  final result = await OpenFile.open(file.localPath);
+                  final result = await OpenFile.open(file.localFilePath);
                   if (kDebugMode) {
                     print(result.message);
                   }
                 },
               ),
             ),
-            CheckboxListTile(
-              title: const Text('Should sync'),
-              value: file.shouldFetch,
-              onChanged: (bool? value) async {
-                //file.shouldFetch = value;
-                //await saveElement();
-              },
-            ),
-            CheckboxListTile(
-              title: const Text('Is deleted?'),
-              value: file.isDeleted,
-              onChanged: (bool? value) async {
-                file.isDeleted = value;
-                await saveElement();
-              },
+            SizedBox(
+              width: double.maxFinite,
+              child: OutlinedButton(
+                onPressed: () async {
+                  file.delete();
+                  await saveElement();
+                },
+                child: const Text('Delete file'),
+              ),
             ),
             SizedBox(
               width: double.maxFinite,
@@ -95,7 +83,7 @@ class _FileViewState extends State<FileView> {
     if (kDebugMode) {
       print('saveElement:');
     }
-    file.path = pathCtrl.text;
+    // file.filePath = pathCtrl.text;
     // await file.saveAndBroadcast(p3p!);
     setState(() {});
   }

@@ -57,7 +57,7 @@ class _ChatPageState extends State<ChatPage> {
       ),
       endDrawer: Drawer(
         child: FileManager(
-          fileStore: userInfo.fileStore,
+          fileStore: userInfo.sharedFiles,
           roomFingerprint: userInfo.publicKey.fingerprint,
           chatroom: userInfo,
         ),

@@ -5,8 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:p3p/p3p.dart';
 import 'package:p3pch4t/main.dart';
-import 'package:p3pch4t/pages/fileview.dart';
-import 'package:p3pch4t/pages/webxdcfileview.dart';
+import 'package:p3pch4t/pages/fileview_sharedfile.dart';
 
 import 'package:path/path.dart' as p;
 
@@ -30,7 +29,7 @@ class _FileManagerState extends State<FileManager> {
   late final roomFingerprint = widget.roomFingerprint;
   late final chatroom = widget.chatroom;
 
-  Iterable<FileStoreElement> files = [];
+  Iterable<SharedFile> files = [];
   String path = '/';
 
   @override
@@ -40,7 +39,7 @@ class _FileManagerState extends State<FileManager> {
   }
 
   void loadFiles() {
-    final newFiles = chatroom.fileStore.files;
+    final newFiles = chatroom.sharedFiles.files;
     setState(() {
       files = newFiles;
     });
@@ -48,30 +47,26 @@ class _FileManagerState extends State<FileManager> {
 
   @override
   Widget build(BuildContext context) {
-    final inScopeAll = files.where((elm) => elm.path.startsWith(path)).toList();
+    final inScopeAll =
+        files.where((elm) => elm.filePath.startsWith(path)).toList();
     var inScopeDirectories = <String>[];
     if (path != '/') {
       inScopeDirectories.add('..');
     }
     for (final file in inScopeAll) {
-      if (file.path == p.join(path, p.basename(file.path))) continue;
+      if (file.filePath == p.join(path, p.basename(file.filePath))) continue;
 
-      var fs1 = file.path.substring(path.length);
+      var fs1 = file.filePath.substring(path.length);
       if (fs1.startsWith('/')) fs1 = fs1.substring(1);
 
       inScopeDirectories.add(fs1.substring(0, fs1.indexOf('/')));
     }
     inScopeDirectories = inScopeDirectories.toSet().toList();
     final inScopeFiles = inScopeAll
-        .where((elm) => !elm.path.substring(path.length + 1).contains('/'))
-        .where((elm) => kDebugMode || !p.basename(elm.path).startsWith('.'))
-        .where((elm) => !elm.isDeleted)
+        .where((elm) => !elm.filePath.substring(path.length + 1).contains('/'))
+        .where((elm) => kDebugMode || !p.basename(elm.filePath).startsWith('.'))
         .toList();
-    // final inScopeFiles = inScopeAll
-    //     .toSet()
-    //     .toList()
-    //     .where((elm) => !elm.path.substring(path.length + 1).contains('/'))
-    //     .toList();
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -100,10 +95,10 @@ class _FileManagerState extends State<FileManager> {
             final dateSlug = '${today.year}-'
                 '${today.month.toString().padLeft(2, '0')}-'
                 '${today.day.toString().padLeft(2, '0')}';
-            p3p.createFileStoreElement(
+            p3p.createSharedFile(
               chatroom,
               localFilePath: file.path!,
-              fileInChatPath: '/Unsort/$dateSlug/${file.name}',
+              remoteFilePath: '/Unsort/$dateSlug/${file.name}',
             );
             loadFiles();
           }
@@ -113,14 +108,12 @@ class _FileManagerState extends State<FileManager> {
     );
   }
 
-  Card renderFile(FileStoreElement file, String roomFingerprint) {
+  Card renderFile(SharedFile file, String roomFingerprint) {
     return Card(
-      color:
-          file.isDeleted ? Theme.of(context).colorScheme.errorContainer : null,
       child: ListTile(
         leading: const Icon(Icons.description),
         title: Text(
-          p.basename(file.path),
+          p.basename(file.filePath),
           maxLines: 1,
         ),
         subtitle:
@@ -140,17 +133,10 @@ class _FileManagerState extends State<FileManager> {
           await Navigator.of(context).push(
             MaterialPageRoute<void>(
               builder: (context) {
-                return switch (file.path.split('.').reversed.first) {
-                  'xdc' => WebxdcFileView(
-                      file: file,
-                      roomFingerprint: roomFingerprint,
-                      chatroom: chatroom,
-                    ),
-                  _ => FileView(
-                      file: file,
-                      roomFingerprint: roomFingerprint,
-                    )
-                };
+                return FileView(
+                  file: file,
+                  roomFingerprint: roomFingerprint,
+                );
               },
             ),
           );

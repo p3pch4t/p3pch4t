@@ -373,18 +373,18 @@ packages:
     dependency: "direct main"
     description:
       name: p3p
-      sha256: "053b3dfa030d82af31a74ddcef6a03f934c06f51f0814dc6e52263a4886bb2e4"
+      sha256: eb42d3473526dcadd5ed0a995564ad115ff23a56b777374485fb922922970a15
       url: "https://git.mrcyjanek.net/api/packages/p3pch4t/pub/"
     source: hosted
-    version: "1.0.0+40"
+    version: "1.0.0+54"
   p3pgo_libs:
     dependency: "direct main"
     description:
       name: p3pgo_libs
-      sha256: b3a6ebb901252a82550274b20a22ece95e546a926bd89a66357254ecaa982fb1
+      sha256: "05850918f671bc806f8ca67e6ea177e0aca70a1974726677bbd30630842fe6a0"
       url: "https://git.mrcyjanek.net/api/packages/p3pch4t/pub/"
     source: hosted
-    version: "1.0.0+1"
+    version: "1.0.0+14"
   path:
     dependency: "direct main"
     description:

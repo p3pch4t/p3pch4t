@@ -33,10 +33,10 @@ dependencies:
     git: https://github.com/p3pch4t/open_file.git
   p3p:
     hosted: https://git.mrcyjanek.net/api/packages/p3pch4t/pub/
-    version: 1.0.0+40
+    version: 1.0.0+54
   p3pgo_libs:
     hosted: https://git.mrcyjanek.net/api/packages/p3pch4t/pub/
-    version: 1.0.0+1
+    version: 1.0.0+14
   path: 1.8.3
   path_provider: 2.1.2
   permission_handler: 11.0.1
