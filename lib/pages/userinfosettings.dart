@@ -19,6 +19,8 @@ class _UserInfoPageState extends State<UserInfoPage> {
   late final endpointCtrl =
       TextEditingController(text: widget.userInfo.endpoint);
 
+  late final sharedFiles = widget.userInfo.sharedFilesMetadata;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,9 +64,37 @@ class _UserInfoPageState extends State<UserInfoPage> {
                 ),
               ),
             ),
+            const Divider(),
+            ..._buildFiles(),
           ],
         ),
       ),
     );
+  }
+
+  List<Widget> _buildFiles() {
+    final list = <Widget>[];
+    for (final sf in sharedFiles) {
+      list.add(
+        ExpansionTile(
+          title: SelectableText('#${sf.id}. ${sf.dbKeyID}/${sf.keyPart}'),
+          expandedAlignment: Alignment.topLeft,
+          children: [
+            SelectableText('#intId: ${sf.intId}'),
+            SelectableText('.id: ${sf.id}'),
+            SelectableText('.dbKeyID: ${sf.dbKeyID}'),
+            SelectableText('.keyPart: ${sf.keyPart}'),
+            SelectableText('.filesEndpoint: ${sf.filesEndpoint}'),
+            SelectableText('.authentication: ${sf.authentication}'),
+            SelectableText("""
+curl \\
+'${sf.filesEndpoint}/.metadata.json' \\
+-H 'Authentication: ${sf.authentication}' \\
+| jq"""),
+          ],
+        ),
+      );
+    }
+    return list;
   }
 }

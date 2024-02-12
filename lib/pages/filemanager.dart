@@ -95,11 +95,14 @@ class _FileManagerState extends State<FileManager> {
             final dateSlug = '${today.year}-'
                 '${today.month.toString().padLeft(2, '0')}-'
                 '${today.day.toString().padLeft(2, '0')}';
-            p3p.createSharedFile(
+            final ret = p3p.createSharedFile(
               chatroom,
               localFilePath: file.path!,
               remoteFilePath: '/Unsort/$dateSlug/${file.name}',
             );
+            if (ret != null) {
+              p3p.print(ret);
+            }
             loadFiles();
           }
           loadFiles();

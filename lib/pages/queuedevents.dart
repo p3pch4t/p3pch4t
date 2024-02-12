@@ -21,7 +21,7 @@ class _QueuedEventsPageState extends State<QueuedEventsPage> {
           final evt = queuedEvents[index];
           return Card(
             child: ListTile(
-              title: Text(evt.endpoint),
+              title: Text('#${evt.id}. ${evt.endpoint}'),
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute<void>(

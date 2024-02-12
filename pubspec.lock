@@ -373,18 +373,18 @@ packages:
     dependency: "direct main"
     description:
       name: p3p
-      sha256: eb42d3473526dcadd5ed0a995564ad115ff23a56b777374485fb922922970a15
+      sha256: cab976ff87e3146a5289e3952b63b8c87cbbb5d725d4985da7e1da250186b942
       url: "https://git.mrcyjanek.net/api/packages/p3pch4t/pub/"
     source: hosted
-    version: "1.0.0+54"
+    version: "1.0.0+56"
   p3pgo_libs:
     dependency: "direct main"
     description:
       name: p3pgo_libs
-      sha256: "05850918f671bc806f8ca67e6ea177e0aca70a1974726677bbd30630842fe6a0"
+      sha256: "5fbafe166aa21b8105171297ff00e8e3daf920090535692f8cfddf2880cacd78"
       url: "https://git.mrcyjanek.net/api/packages/p3pch4t/pub/"
     source: hosted
-    version: "1.0.0+14"
+    version: "1.0.0+15"
   path:
     dependency: "direct main"
     description:
@@ -794,26 +794,26 @@ packages:
     dependency: transitive
     description:
       name: webview_flutter_android
-      sha256: "161af93c2abaf94ef2192bffb53a3658b2d721a3bf99b69aa1e47814ee18cc96"
+      sha256: "3e5f4e9d818086b0d01a66fb1ff9cc72ab0cc58c71980e3d3661c5685ea0efb0"
       url: "https://pub.dev"
     source: hosted
-    version: "3.13.2"
+    version: "3.15.0"
   webview_flutter_platform_interface:
     dependency: transitive
     description:
       name: webview_flutter_platform_interface
-      sha256: "80b40ae4fb959957eef9fa8970b6c9accda9f49fc45c2b75154696a8e8996cfe"
+      sha256: d937581d6e558908d7ae3dc1989c4f87b786891ab47bb9df7de548a151779d8d
       url: "https://pub.dev"
     source: hosted
-    version: "2.9.1"
+    version: "2.10.0"
   webview_flutter_wkwebview:
     dependency: transitive
     description:
       name: webview_flutter_wkwebview
-      sha256: "4d062ad505390ecef1c4bfb6001cd857a51e00912cc9dfb66edb1886a9ebd80c"
+      sha256: "9bf168bccdf179ce90450b5f37e36fe263f591c9338828d6bf09b6f8d0f57f86"
       url: "https://pub.dev"
     source: hosted
-    version: "3.10.2"
+    version: "3.12.0"
   win32:
     dependency: transitive
     description:
@@ -848,4 +848,4 @@ packages:
     version: "3.5.0"
 sdks:
   dart: ">=3.2.3 <4.0.0"
-  flutter: ">=3.16.0"
+  flutter: ">=3.16.6"
