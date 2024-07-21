@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
@@ -104,8 +103,8 @@ When requested to restore backup keep in mind that:
     final i2pdAddressContent =
         base64Encode(await File(i2pdAddressDat).readAsBytes());
     _log("= objectbox");
-    store.awaitAsyncCompletion();
-    store.awaitAsyncSubmitted();
+    store.awaitQueueCompletion();
+    store.awaitQueueSubmitted();
     final objectboxDataMdb = "${store.directoryPath}/data.mdb";
     final objectboxDataMdbContent =
         base64Encode(await File(objectboxDataMdb).readAsBytes());
@@ -124,14 +123,14 @@ When requested to restore backup keep in mind that:
         await OpenPGP.encrypt(backupObject, (await getSelfPubKey()).publicKey);
     _log("= encS: OK");
     final blobEnc = XFile.fromData(
-      utf8.encode(encS) as Uint8List,
+      utf8.encode(encS),
       name: "p3p-backup-${DateTime.now().toIso8601String()}.bin",
     );
     _log("= blobEnc: OK");
     final filePrivkey = XFile.fromData(
       utf8.encode(
         prefs.getString("privkey")!,
-      ) as Uint8List,
+      ),
       name: "privkey.asc",
     );
     _log("= privatekey: ok");

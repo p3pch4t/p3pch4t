@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:p3pch4t/classes/message.dart';
 import 'package:p3pch4t/classes/fileevt.dart';
@@ -66,12 +65,12 @@ Future<Response> handleFileV1(Map<String, dynamic> req) async {
     isTrusted: req["isValid"],
     isSelf: false,
     nonce: "incomming:${req["body"]["body"]["nonce"]}",
-    data: utf8.encode(jsonEncode(req["body"]["body"])) as Uint8List,
+    data: utf8.encode(jsonEncode(req["body"]["body"])),
   );
   msg.type = req["body"]["body"]["type"];
   msg.isTrusted = req["isValid"];
   msg.nonce = "incomming:${req["body"]["body"]["nonce"]}";
-  msg.data = utf8.encode(jsonEncode(req["body"]["body"])) as Uint8List;
+  msg.data = utf8.encode(jsonEncode(req["body"]["body"]));
   msg.id = messageBox.put(msg);
 
   String endpoint = "${body["endpoint"]}";

@@ -132,7 +132,8 @@ class _UserFileManagerState extends State<UserFileManager> {
       floatingActionButtonLocation: ExpandableFab.location,
       floatingActionButton: ExpandableFab(
         distance: 65,
-        expandedFabSize: ExpandableFabSize.regular,
+        
+        // expandedFabSize: ExpandableFabSize.regular,
         type: ExpandableFabType.up,
         children: [
           FloatingActionButton(

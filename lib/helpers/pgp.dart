@@ -6,8 +6,7 @@ const passpharse = "null";
 Future<void> GenPGP(String name, String email) async {
   Stopwatch stopwatch = Stopwatch()..start();
   var keyOptions = KeyOptions()
-    ..rsaBits = 4096
-    ..algorithm = Algorithm.RSA;
+    ..rsaBits = 4096;
   print("generating....");
 
   try {

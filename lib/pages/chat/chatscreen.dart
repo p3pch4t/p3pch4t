@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:p3pch4t/classes/event.dart';
 import 'package:p3pch4t/classes/fileevt.dart';
@@ -220,7 +219,7 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
                                   isTrusted: true,
                                   isSelf: true,
                                   nonce: evt.json["nonce"],
-                                  data: utf8.encode(evt.jsonBody) as Uint8List,
+                                  data: utf8.encode(evt.jsonBody),
                                 ),
                               );
                               fileevtBox.put(fevt);

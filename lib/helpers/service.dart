@@ -9,7 +9,6 @@ import 'package:p3pch4t/helpers/eventTasks.dart';
 import 'package:p3pch4t/main.dart';
 import 'package:p3pch4t/transport/server/chat_server.dart';
 import 'package:p3pch4t/transport/server/notify.dart';
-import 'package:flutter_background_service_android/flutter_background_service_android.dart';
 
 const notificationChannelId = 'my_foreground';
 const notificationId = 888;

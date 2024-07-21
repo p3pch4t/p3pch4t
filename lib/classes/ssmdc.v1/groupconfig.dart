@@ -231,8 +231,7 @@ class SSMDCv1GroupConfig {
 
   Future<void> generateGroupPgp(String groupEmail, String groupName) async {
     var keyOptions = pgp.KeyOptions()
-      ..rsaBits = 4096
-      ..algorithm = pgp.Algorithm.RSA;
+      ..rsaBits = 4096;
     var keyPair = await pgp.OpenPGP.generate(
       options: pgp.Options()
         ..name = name

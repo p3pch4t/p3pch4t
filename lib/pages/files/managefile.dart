@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -111,7 +110,7 @@ class _ManageFileState extends State<ManageFile> {
                 child: Text(!editMode ? "Edit" : "Save"),
                 onPressed: () {
                   if (editMode) {
-                    file.contentBytes = utf8.encode(contentController.text) as Uint8List;
+                    file.contentBytes = utf8.encode(contentController.text);
                     file.save();
                   }
                   setState(() {

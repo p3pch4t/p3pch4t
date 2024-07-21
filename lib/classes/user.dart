@@ -7,8 +7,11 @@ import 'package:openpgp/openpgp.dart' as pgp;
 import 'package:p3pch4t/classes/event.dart';
 import 'package:p3pch4t/helpers/pgp.dart';
 import 'package:p3pch4t/helpers/prefs.dart';
-import 'package:p3pch4t/objectbox.g.dart';
+// ignore: unnecessary_import
+import 'package:objectbox/objectbox.dart';
 import 'package:random_string/random_string.dart';
+
+import 'package:p3pch4t/objectbox.g.dart';
 
 @Entity()
 class User {
@@ -191,7 +194,8 @@ class User {
 }
 
 Future<void> introduceNewUsers() async {
-  List<User> ul = userBox.query(User_.isIntroduced.equals(false)).build().find();
+  // (DateTime.now().difference(lastIntroduced).inSeconds < 60 * 60 * 12)
+  List<User> ul = userBox.query(User_.lastIntroduced.lessOrEqualDate(DateTime.now().subtract(const Duration(hours: 12)))).build().find();
   for (var u in ul) {
     u.isIntroduced = true;
     u.introduce();
