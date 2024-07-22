@@ -5,7 +5,7 @@ import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:i2p_flutter/i2p_flutter.dart';
-import 'package:openpgp/openpgp.dart';
+import 'package:dart_pg/dart_pg.dart';
 import 'package:p3pch4t/classes/privkey.dart';
 import 'package:p3pch4t/helpers/prefs.dart';
 import 'package:share_plus/share_plus.dart';
@@ -119,11 +119,15 @@ When requested to restore backup keep in mind that:
 
     _log("Size: ${filesize(backupObject.length)}");
     _log("= Encrypting");
-    final encS =
-        await OpenPGP.encrypt(backupObject, (await getSelfPubKey()).publicKey);
+    final encS = await OpenPGP.encrypt(
+      Message.createTextMessage(backupObject),
+      encryptionKeys: [
+        await OpenPGP.readPublicKey((await getSelfPubKey()).publicKey),
+      ]
+    );
     _log("= encS: OK");
     final blobEnc = XFile.fromData(
-      utf8.encode(encS),
+      utf8.encode(encS.literalData!.text),
       name: "p3p-backup-${DateTime.now().toIso8601String()}.bin",
     );
     _log("= blobEnc: OK");

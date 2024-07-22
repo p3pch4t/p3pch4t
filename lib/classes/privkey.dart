@@ -1,7 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:objectbox/objectbox.dart';
-import 'package:openpgp/openpgp.dart' as pgp;
-import 'package:p3pch4t/helpers/pgp.dart';
+import 'package:dart_pg/dart_pg.dart' as pgp;
 import 'package:p3pch4t/helpers/prefs.dart';
 
 @Entity()
@@ -19,18 +18,21 @@ class PublicKey {
   String publicKey;
 
   Future<String> encryptForMe(Uint8List data) async {
-    var encrypted = await pgp.OpenPGP.encryptBytes(data, publicKey);
-    var signed = await pgp.OpenPGP.signBytes(
-        encrypted, publicKey, prefs.getString("privkey")!, passpharse);
-    var armored = await pgp.OpenPGP.armorEncode(signed);
-    return armored;
+    var encrypted = await pgp.OpenPGP.encrypt(
+      pgp.Message.createBinaryMessage(data),
+      encryptionKeys: [
+        await pgp.OpenPGP.readPublicKey((await getSelfPubKey()).publicKey)
+      ],
+      signingKeys: [
+        await pgp.OpenPGP.readPrivateKey(prefs.getString("privkey")!)
+      ]
+    );
+    return encrypted.armor();
   }
 }
 
 Future<PublicKey> getSelfPubKey() async {
   return PublicKey(
-    publicKey: await pgp.OpenPGP.convertPrivateKeyToPublicKey(
-      prefs.getString("privkey")!,
-    ),
+    publicKey: (await pgp.OpenPGP.readPrivateKey(prefs.getString("privkey")!)).toPublic.armor()
   );
 }

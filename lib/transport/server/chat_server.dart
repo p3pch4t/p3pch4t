@@ -1,6 +1,5 @@
 import 'dart:convert';
-
-import 'package:openpgp/openpgp.dart';
+import 'package:dart_pg/dart_pg.dart';
 import 'package:p3pch4t/helpers/pgp.dart';
 import 'package:p3pch4t/helpers/prefs.dart';
 import 'package:p3pch4t/transport/server/calendar.v1/syncv1.dart';
@@ -65,11 +64,8 @@ coreEvent(Request request) async {
 
 // request: /core/selfpgp
 coreSelfpgp(Request request) async {
-  //var req = await decodeObj(await request.readAsString());
-  var pubkey =
-      await OpenPGP.convertPrivateKeyToPublicKey(prefs.getString("privkey")!);
-
-  return Response.ok(pubkey);
+  var selfprivkey = await OpenPGP.readPrivateKey(prefs.getString("privkey")!);
+  return Response.ok(selfprivkey.toPublic.armor());
 }
 
 // all requests body must be packaged in something that looks like this:
@@ -82,18 +78,30 @@ coreSelfpgp(Request request) async {
 // - which returns plaintext PGP key)
 Future<Map<String, dynamic>> decodeObj(String req, String privkey) async {
   var rawBody = jsonDecode(
-    await OpenPGP.decrypt(
-      req,
-      privkey,
-      passpharse,
-    ),
+    (await OpenPGP.decrypt(
+      Message.fromArmored(req),
+      decryptionKeys: [
+        await (await OpenPGP.readPrivateKey(privkey)).decrypt(passpharse)
+      ],
+    )).literalData!.text,
   );
 
-  bool isValid = await OpenPGP.verify(
-    rawBody["signature"],
-    rawBody["body"],
-    rawBody["senderpgp"],
-  );
+  bool isValid = false;
+
+  try {
+    // I think this is correct?
+    isValid = await OpenPGP.verifyDetached(
+      rawBody["body"],
+      rawBody["signature"],
+      [
+        await OpenPGP.readPublicKey(rawBody["senderpgp"]),
+      ]
+    ) == rawBody["body"];
+  } catch (e) {
+    print(e);
+    isValid = false;
+  }
+
   rawBody["body"] = jsonDecode(rawBody["body"]);
   return {
     "isValid": isValid,

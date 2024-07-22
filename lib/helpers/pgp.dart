@@ -1,24 +1,20 @@
-import 'package:openpgp/openpgp.dart';
+import 'package:dart_pg/dart_pg.dart';
 import 'package:p3pch4t/helpers/prefs.dart';
 
 const passpharse = "null";
 
 Future<void> GenPGP(String name, String email) async {
   Stopwatch stopwatch = Stopwatch()..start();
-  var keyOptions = KeyOptions()
-    ..rsaBits = 4096;
+  
   print("generating....");
 
   try {
-    var keyPair = await OpenPGP.generate(
-        options: Options()
-          ..name = name
-          ..email = email
-          ..passphrase = passpharse
-          ..keyOptions = keyOptions);
-    print(keyPair.publicKey);
+    var privkey = await OpenPGP.generateKey(
+      ["$name <$email>"],
+      passpharse);
+    print(privkey.toPublic.armor());
     print("${stopwatch.elapsed.inMilliseconds} ms");
-    prefs.setString("privkey", keyPair.privateKey);
+    prefs.setString("privkey", privkey.armor());
   } catch (e) {
     print(e.toString());
   }

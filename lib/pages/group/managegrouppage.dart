@@ -1,6 +1,6 @@
+import 'package:dart_pg/dart_pg.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:openpgp/openpgp.dart';
 import 'package:p3pch4t/classes/event.dart';
 import 'package:p3pch4t/classes/ssmdc.v1/groupconfig.dart';
 import 'package:p3pch4t/helpers/themes.dart';
@@ -43,13 +43,16 @@ class _ManageGroupPageState extends State<ManageGroupPage> {
   String publicKey = "loading...";
   @override
   void initState() {
-    OpenPGP.convertPrivateKeyToPublicKey(widget.group.groupPrivatePgp)
-        .then((value) {
-      setState(() {
-        publicKey = value;
-      });
-    });
+    _initStateAsync();
     super.initState();
+  }
+
+  Future<void> _initStateAsync() async {
+    final privkey = await OpenPGP.readPrivateKey(widget.group.groupPrivatePgp);
+    final pubkey = privkey.toPublic;
+    setState(() {
+      publicKey = pubkey.armor();
+    });
   }
 
   @override

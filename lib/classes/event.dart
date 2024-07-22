@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:openpgp/openpgp.dart' as pgp;
+import 'package:dart_pg/dart_pg.dart' as pgp;
 import 'package:p3pch4t/classes/fileevt.dart';
 import 'package:p3pch4t/classes/ssmdc.v1/groupconfig.dart';
 import 'package:p3pch4t/classes/user.dart';
@@ -48,17 +48,15 @@ class Event {
   ToMany<User> destinations = ToMany<User>();
 
   Future<Map<String, dynamic>> toJson() async {
-    final String selfPublicKey = await pgp.OpenPGP.convertPrivateKeyToPublicKey(
+    final selfPrivKey = await (await pgp.OpenPGP.readPrivateKey(
       privKey,
-    );
+    )).decrypt(passpharse);
     return {
-      "senderpgp": selfPublicKey,
-      "signature": await pgp.OpenPGP.sign(
+      "senderpgp": selfPrivKey.toPublic.armor(),
+      "signature": (await pgp.OpenPGP.sign(
         jsonBody,
-        selfPublicKey,
-        privKey,
-        passpharse,
-      ),
+        [selfPrivKey],
+      )).armor(),
       "body": jsonBody,
     };
   }
@@ -164,9 +162,9 @@ class Event {
 
   static Future<Event> newSsmdcv1Introduction(
       User u, SSMDCv1GroupConfig group) async {
-    final String selfPublicKey = await pgp.OpenPGP.convertPrivateKeyToPublicKey(
+    final selfPublicKey = await (await pgp.OpenPGP.readPrivateKey(
       prefs.getString("privkey")!,
-    );
+    )).decrypt(passpharse);
     final evt = Event(
       privKey: group.groupPrivatePgp,
       jsonBody: jsonEncode({
@@ -189,16 +187,16 @@ class Event {
 
   static Future<Event> newIntroduction(User u) async {
     await prefs.reload();
-    final String selfPublicKey = await pgp.OpenPGP.convertPrivateKeyToPublicKey(
+    final selfPublicKey = await (await pgp.OpenPGP.readPrivateKey(
       prefs.getString("privkey")!,
-    );
+    )).decrypt(passpharse);
     final evt = Event(
       privKey: prefs.getString("privkey")!,
       jsonBody: jsonEncode({
         "type": "introduce.v1",
         "nonce": randomAlphaNumeric(64),
         "data": {
-          "senderpgp": selfPublicKey,
+          "senderpgp": selfPublicKey.armor(),
           "connstring": prefs.getString("connstring"),
           "connmethod": "i2p",
           "username": prefs.getString("username"),

@@ -1,3 +1,6 @@
+
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:p3pch4t/helpers/boot.dart';
 import 'package:p3pch4t/helpers/service.dart';
@@ -19,6 +22,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await doTheObvious();
+  // prefs.clear();
+  // Directory(store.directoryPath).deleteSync(recursive: true);
   await platformBoot();
   runApp(const MyApp());
 }

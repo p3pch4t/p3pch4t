@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:i2p_flutter/i2p_flutter.dart';
-import 'package:openpgp/openpgp.dart' as pgp;
+import 'package:dart_pg/dart_pg.dart' as pgp;
 import 'package:p3pch4t/classes/event.dart';
 import 'package:p3pch4t/helpers/pgp.dart';
 import 'package:p3pch4t/helpers/prefs.dart';
@@ -85,7 +85,14 @@ class User {
     }
 
     var bodyJson = await evt.toJson();
-    var encBody = await pgp.OpenPGP.encrypt(jsonEncode(bodyJson), publicKey!);
+    var encBody = (await pgp.OpenPGP.encrypt(
+      await pgp.OpenPGP.createTextMessage(
+        jsonEncode(bodyJson)
+      ), 
+      encryptionKeys: [
+        await pgp.OpenPGP.readPublicKey(publicKey!)
+      ]
+    )).armor();
     Response? resp;
     try {
       // resp = await http.post(
@@ -160,19 +167,27 @@ class User {
           "http://$connstring/core/selfpgp",
           options: Options(
             responseType: ResponseType.plain,
-            sendTimeout: const Duration(seconds: 15),
+            sendTimeout: const Duration(seconds: 300),
           ),
         );
-    String ok = await pgp.OpenPGP.sign(
-      DateTime.now().toIso8601String(),
-      resp.data,
-      prefs.getString("privkey")!,
-      passpharse,
-    );
-    if (ok.isNotEmpty) {
+    try {
+      pgp.SignedMessage ok = await pgp.OpenPGP.sign(
+        DateTime.now().toIso8601String(),
+        [
+          await (await pgp.OpenPGP.readPrivateKey(prefs.getString("privkey")!)).decrypt(passpharse)
+        ]
+      );
+      // String ok = await pgp.OpenPGP.sign(
+      //   DateTime.now().toIso8601String(),
+      //   resp.data,
+      //   prefs.getString("privkey")!,
+      //   passpharse,
+      // );
       publicKey = resp.data;
       id = userBox.put(this);
       queueSendEvent(await Event.newIntroduction(this));
+    } catch (e) {
+      print(e);
     }
   }
 

@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dart_pg/dart_pg.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:i2p_flutter/i2p_flutter.dart';
-import 'package:openpgp/openpgp.dart';
 import 'package:p3pch4t/classes/privkey.dart';
 import 'package:p3pch4t/helpers/pgp.dart';
 import 'package:p3pch4t/helpers/prefs.dart';
@@ -60,11 +60,12 @@ but simply reopen the app to continue using your restored session)
                         "privkey", utf8.decode(pKey.files.single.bytes!));
 
                     final decoded = await OpenPGP.decrypt(
-                      utf8.decode(blob.files.single.bytes!),
-                      prefs.getString("privkey")!,
-                      passpharse,
+                      Message.createTextMessage(utf8.decode(blob.files.single.bytes!)),
+                      decryptionKeys: [
+                        await (await OpenPGP.readPrivateKey(prefs.getString("privkey")!)).decrypt(passpharse)
+                      ],
                     );
-                    final json = jsonDecode(decoded);
+                    final json = jsonDecode(decoded.literalData!.text);
                     // var backupObject = jsonEncode({
                     //  "compat": "backup.v1",
                     //  "i2pd": i2pdAddressContent,
@@ -139,11 +140,15 @@ but simply reopen the app to continue using your restored session)
 
     _log("Size: ${filesize(backupObject.length)}");
     _log("= Encrypting");
-    final encS =
-        await OpenPGP.encrypt(backupObject, (await getSelfPubKey()).publicKey);
+    final encS = await OpenPGP.encrypt(
+      Message.createTextMessage(backupObject),
+      encryptionKeys: [
+        await OpenPGP.readPublicKey((await getSelfPubKey()).publicKey)
+      ]
+    );
     _log("= encS: OK");
     final blobEnc = XFile.fromData(
-      utf8.encode(encS),
+      utf8.encode(encS.literalData!.text),
       name: "p3p-backup-${DateTime.now().toIso8601String()}.bin",
     );
     _log("= blobEnc: OK");

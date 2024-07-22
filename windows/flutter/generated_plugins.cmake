@@ -6,7 +6,6 @@ list(APPEND FLUTTER_PLUGIN_LIST
   file_selector_windows
   i2p_flutter
   objectbox_flutter_libs
-  openpgp
   permission_handler_windows
   share_plus
   url_launcher_windows

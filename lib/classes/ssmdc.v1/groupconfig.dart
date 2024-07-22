@@ -8,7 +8,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:p3pch4t/classes/event.dart';
 import 'package:p3pch4t/classes/user.dart';
-import 'package:openpgp/openpgp.dart' as pgp;
+import 'package:dart_pg/dart_pg.dart' as pgp;
 import 'package:p3pch4t/helpers/pgp.dart';
 import 'package:p3pch4t/objectbox.g.dart';
 // ignore: unnecessary_import
@@ -226,20 +226,15 @@ class SSMDCv1GroupConfig {
   }
 
   Future<String> groupPublicKey() async {
-    return await pgp.OpenPGP.convertPrivateKeyToPublicKey(groupPrivatePgp);
+    return (await pgp.OpenPGP.readPrivateKey(groupPrivatePgp)).toPublic.armor();
   }
 
   Future<void> generateGroupPgp(String groupEmail, String groupName) async {
-    var keyOptions = pgp.KeyOptions()
-      ..rsaBits = 4096;
-    var keyPair = await pgp.OpenPGP.generate(
-      options: pgp.Options()
-        ..name = name
-        ..email = groupEmail
-        ..passphrase = passpharse
-        ..keyOptions = keyOptions,
+    var privkey = await pgp.OpenPGP.generateKey(
+      ["$name <$groupEmail>"],
+      passpharse,
     );
-    groupPrivatePgp = keyPair.privateKey;
+    groupPrivatePgp = privkey.armor();
   }
 
   Future<void> broadcastToAll(Event evt, User? except) async {
